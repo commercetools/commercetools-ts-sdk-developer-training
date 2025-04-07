@@ -1,0 +1,196 @@
+<div class="container py-5">
+  <div class="row h-100">
+    <div class="col-md-9">
+      <h2>Custom Objects</h2>
+      <br />
+      <div class="accordion" id="customObjectsAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="task1">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapse1"
+              aria-expanded="true"
+              aria-controls="collapse1"
+            >
+              A customer should have the option to subscribe to promotional
+              emails.
+            </button>
+          </h2>
+          <div
+            id="collapse1"
+            class="accordion-collapse show"
+            aria-labelledby="task1"
+            data-bs-parent="#customObjectsAccordion"
+          >
+            <div class="accordion-body">
+              <span
+                >UPDATE CUSTOMOBJECTS -
+                <code>POST /extentions/custom-objects</code></span
+              ><br /><br />
+              <div class="mb-3">
+                <label for="user" class="form-label">Name</label>
+                <input
+                  type="text"
+                  class="form-control mb-4"
+                  id="user"
+                  placeholder="Name"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input
+                  type="email"
+                  class="form-control mb-4"
+                  id="email"
+                  placeholder="Email Address"
+                />
+              </div>
+
+              <button class="btn btn-primary" onclick="subscribe()">
+                Subscribe
+              </button>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="task2">
+              <button
+                class="accordion-button"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapse2"
+                aria-expanded="false"
+                aria-controls="collapse2"
+              >
+                Create/Get Custom Object.
+              </button>
+            </h2>
+            <div
+              id="collapse2"
+              class="accordion-collapse collapse"
+              aria-labelledby="task2"
+              data-bs-parent="#customObjectsAccordion"
+            >
+              <div class="accordion-body">
+                <span
+                  >CREATE CUSTOM OBJECT -
+                  <code>POST /extensions/custom-objects</code></span
+                ><br /><br />
+                <span
+                  >GET CUSTOM OBJECT -
+                  <code
+                    >GET /extensions/custom-objects/container/key</code
+                  ></span
+                ><br /><br />
+                <button class="btn btn-primary" onclick="createCustomObject()">
+                  Create Custom Object
+                </button>
+                <button class="btn btn-primary" onclick="getCustomObject()">
+                  Get Subscribers
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <br /><br />
+      <main class="d-flex flex-nowrap">
+        <div class="row h-100">
+          <div class="d-flex col-md-12">
+            <div class="container col-md-12">
+              <pre
+                id="results"
+                class="mt-1 flex-fill d-flex overflow-auto"
+              ></pre>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<script>
+  let container = 'email-lists';
+  let key = 'promotional-email-subscribers';
+
+  function createCustomObject() {
+    const results = document.getElementById('results');
+    results.textContent = '';
+
+    let url = '/api/extensions/custom-objects';
+
+    const formData = {};
+    formData.container = container;
+    formData.key = key;
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
+      .then(handleResponse)
+      .then((data) => {
+        console.log('Success:', data);
+        results.textContent = 'Custom Object created successfully.';
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        results.textContent = error.message;
+      });
+  }
+  function subscribe() {
+    let email = document.getElementById('email').value.trim();
+    let user = document.getElementById('user').value.trim();
+    const results = document.getElementById('results');
+
+    results.textContent = '';
+
+    let url = `/api/extensions/custom-objects/${container}/${key}`;
+
+    var formData = {};
+
+    if (user && email) {
+      formData.userName = user;
+      formData.email = email;
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+        .then(handleResponse)
+        .then((data) => {
+          console.log('Success:', data);
+          results.textContent = 'Thanks for subscribing to our newsletter.';
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          results.textContent = error.message;
+        });
+    } else results.textContent = 'enter your name and email.';
+  }
+  function getCustomObject() {
+    const results = document.getElementById('results');
+    results.textContent = '';
+
+    const url = `/api/extensions/custom-objects/${container}/${key}`;
+
+    fetch(url)
+      .then(handleResponse)
+      .then((data) => {
+        console.log('Success:', data);
+        results.textContent = JSON.stringify(data, null, 2);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        results.textContent = error.message;
+      });
+  }
+</script>
