@@ -1,0 +1,38 @@
+<div class="row h-100">
+  <div class="col-md-9">
+    <br /><br />
+    <h2>Session Timed Out!</h2>
+    <br /><br />
+    <div>
+      <p>
+        This simulation demonstrates the process of switching devices or logging
+        out of your session. As a result, you will start as an unregistered
+        customer. You can browse products and create a new anonymous cart.
+        Later, when you sign in to your profile, you'll experience different
+        cart merge options.
+      </p>
+    </div>
+
+    <ul>
+      <li>
+        Visit <strong>Session 3: Create page</strong> to search for products and
+        create a new cart.
+      </li>
+      <li>
+        Use the <strong>Login page</strong> to sign in with your user
+        credentials and observe the changes in the cart.
+      </li>
+    </ul>
+    <p>
+      By default, The current anonymous cart is merged with the most recently
+      used customer cart.
+    </p>
+  </div>
+</div>
+
+<script>
+  if (localStorage.getItem('customerId')) {
+    localStorage.removeItem('customerId');
+    localStorage.removeItem('cartId');
+  }
+</script>

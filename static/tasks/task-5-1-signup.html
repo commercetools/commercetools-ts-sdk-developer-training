@@ -1,0 +1,285 @@
+<div class="container-fluid py-5">
+  <div class="row h-100">
+    <div class="col-md-9">
+      <h2>New Customer Sign Up</h2>
+      <div class="accordion" id="signupAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="task1">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapse1"
+              aria-expanded="true"
+              aria-controls="collapse1"
+            >
+              A customer should have the option to register as a customer.
+            </button>
+          </h2>
+          <div
+            id="collapse1"
+            class="accordion-collapse show"
+            aria-labelledby="task1"
+            data-bs-parent="#signupAccordion"
+          >
+            <div class="accordion-body">
+              <span>CUSTOMER SIGNUP - <code>POST /customers</code></span
+              ><br /><br />
+              <div>
+                <label for="customerEmail" class="form-label mb-2"
+                  >Email Address</label
+                >
+                <input
+                  type="email"
+                  class="form-control mb-2"
+                  id="customerEmail"
+                  name="email"
+                  required
+                />
+              </div>
+              <div>
+                <label for="customerPassword" class="form-label mb-2"
+                  >Password</label
+                >
+                <input
+                  type="password"
+                  class="form-control mb-2"
+                  id="customerPassword"
+                  name="password"
+                  required
+                />
+              </div>
+              <div>
+                <label for="customerKey" class="form-label mb-2"
+                  >Customer Key</label
+                >
+                <input
+                  type="text"
+                  class="form-control mb-2"
+                  id="customerKey"
+                  name="customerKey"
+                  required
+                />
+              </div>
+              <div>
+                <label for="firstName" class="form-label mb-2"
+                  >First Name</label
+                >
+                <input
+                  type="text"
+                  class="form-control mb-2"
+                  id="firstName"
+                  name="firstName"
+                  required
+                />
+              </div>
+              <div>
+                <label for="lastName" class="form-label mb-2">Last Name</label>
+                <input
+                  type="text"
+                  class="form-control mb-2"
+                  id="lastName"
+                  name="lastName"
+                  required
+                />
+              </div>
+              <div class="mt-4 border border-2 rounded p-3">
+                <h4>Address</h4>
+                <div class="d-flex flex-row mt-4">
+                  <div class="col-md-4 mb-2">
+                    <label for="streetNumber" class="form-label"
+                      >Street Number</label
+                    >
+                  </div>
+                  <div class="col-md-8 mb-2">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="streetNumber"
+                      name="streetNumber"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="d-flex flex-row">
+                  <div class="col-md-4 mb-2">
+                    <label for="streetName" class="form-label"
+                      >Street Name</label
+                    >
+                  </div>
+                  <div class="col-md-8 mb-2">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="streetName"
+                      name="streetName"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="d-flex flex-row">
+                  <div class="col-md-4 mb-2">
+                    <label for="region" class="form-label">State</label>
+                  </div>
+                  <div class="col-md-8 mb-2">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="region"
+                      name="region"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="d-flex flex-row">
+                  <div class="col-md-4 mb-2">
+                    <label for="city" class="form-label">City</label>
+                  </div>
+                  <div class="col-md-8 mb-2">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="city"
+                      name="city"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="d-flex flex-row">
+                  <div class="col-md-4 mb-2">
+                    <label for="country" class="form-label">Country</label>
+                  </div>
+                  <div class="col-md-8 mb-2">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="country"
+                      name="country"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="form-check mt-3">
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    id="setDefaultBillingAddress"
+                    name="setDefaultBillingAddress"
+                  />
+                  <label class="form-check-label" for="setDefaultBillingAddress"
+                    >Set as Default Billing Address</label
+                  >
+                </div>
+                <div class="form-check mt-3">
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    id="setDefaultShippingAddress"
+                    name="setDefaultShippingAddress"
+                  />
+                  <label
+                    class="form-check-label"
+                    for="setDefaultShippingAddress"
+                    >Set as Default Shipping Address</label
+                  >
+                </div>
+              </div>
+              <div class="mb-5 mt-5">
+                <label for="anonymousCart" class="form-label"
+                  >Anonymous Cart (read-only)</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="anonymousCart"
+                  name="anonymousCart"
+                  readonly
+                />
+              </div>
+              <div>
+                <button class="btn btn-primary" onclick="signup()">
+                  Sign Up
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <br />
+      <main class="d-flex flex-nowrap">
+        <div class="row h-100 w-100">
+          <div class="d-flex col-md-12">
+            <div class="container col-md-12">
+              <pre
+                id="json-response"
+                class="mt-1 flex-fill d-flex overflow-auto"
+              ></pre>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<script>
+  function displayAnonymousCart(event) {
+    let cartId = localStorage.getItem('cartId');
+
+    if (cartId) event.target.value = cartId;
+    else event.target.value = 'No cart in local cache';
+  }
+
+  if (typeof anonymousCartInput === 'undefined') {
+    let anonymousCartInput = document.getElementById('anonymousCart');
+    anonymousCartInput.addEventListener('focus', displayAnonymousCart);
+  }
+
+  function signup() {
+    const jsonResponseDiv = document.getElementById('json-response');
+    jsonResponseDiv.textContent = '';
+
+    const formData = {
+      email: document.getElementById('customerEmail').value,
+      password: document.getElementById('customerPassword').value,
+      key: document.getElementById('customerKey').value,
+      firstName: document.getElementById('firstName').value,
+      lastName: document.getElementById('lastName').value,
+      streetNumber: document.getElementById('streetNumber').value,
+      streetName: document.getElementById('streetName').value,
+      city: document.getElementById('city').value,
+      region: document.getElementById('region').value,
+      country: document.getElementById('country').value,
+      defaultShippingAddress: document.getElementById(
+        'setDefaultShippingAddress',
+      ).checked,
+      defaultBillingAddress: document.getElementById('setDefaultBillingAddress')
+        .checked,
+    };
+
+    let cartId = localStorage.getItem('cartId');
+    const storeKey = localStorage.getItem('store');
+    if (cartId) {
+      formData.anonymousCartId = cartId;
+    }
+
+    fetch(`/api/in-store/${storeKey}/customers`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
+      .then(handleResponse)
+      .then((data) => {
+        console.log('Success:', data);
+        jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+        localStorage.setItem('customerId', data.customer.id);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        jsonResponseDiv.textContent = error.message;
+      });
+  }
+</script>

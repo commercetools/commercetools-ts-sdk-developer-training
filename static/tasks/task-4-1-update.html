@@ -1,0 +1,342 @@
+<div class="container py-5">
+  <div class="row h-100">
+    <div class="col-md-9">
+      <h2>Cart</h2>
+      <br />
+      <div class="accordion" id="cartAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="form">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapse-form"
+              aria-expanded="true"
+              aria-controls="collapse-form"
+            >
+              A customer should see the current cart.
+            </button>
+          </h2>
+          <div
+            id="collapse-form"
+            class="accordion-collapse show"
+            aria-labelledby="form"
+            data-bs-parent="#cartAccordion"
+          >
+            <div class="accordion-body">
+              <div class="d-flex justify-content-between">
+                <span><code>GET /in-store/storeKey/carts/id</code></span>
+                <button class="btn btn-primary" onclick="getCart()">
+                  Get Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="task1">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapse1"
+              aria-expanded="false"
+              aria-controls="collapse1"
+            >
+              A customer wants to use a discount coupon.
+            </button>
+          </h2>
+          <div
+            id="collapse1"
+            class="accordion-collapse collapse"
+            aria-labelledby="task1"
+            data-bs-parent="#cartAccordion"
+          >
+            <div class="accordion-body">
+              <span
+                >UPDATE CART -
+                <code
+                  >POST /in-store/storeKey/carts/id/discount-codes</code
+                ></span
+              ><br /><br />
+              <div class="mb-3">
+                <label for="code" class="form-label">Discount Code</label>
+                <input type="text" class="form-control mb-2 me-2" id="code" />
+              </div>
+              <button class="btn btn-primary" onclick="updateCart()">
+                Update Cart
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="task2">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapse2"
+              aria-expanded="false"
+              aria-controls="collapse2"
+              id="shipping-accordion-button"
+            >
+              A customer wants to update the shipping address and choose a
+              shipping method.
+            </button>
+          </h2>
+          <div
+            id="collapse2"
+            class="accordion-collapse collapse"
+            aria-labelledby="task2"
+            data-bs-parent="#cartAccordion"
+          >
+            <div class="accordion-body">
+              <span
+                >UPDATE CART -
+                <code
+                  >POST /in-store/storeKey/carts/id/shipping-address</code
+                ></span
+              ><br /><br />
+              <div id="new-address-form">
+                <div class="d-flex flex-column justify-content-between">
+                  <div class="d-flex flex-row mt-4">
+                    <div class="col-md-4 mb-2">
+                      <label for="firstName" class="form-label"
+                        >First Name</label
+                      >
+                    </div>
+                    <div class="col-md-8 mb-2">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="firstName"
+                        name="firstName"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="d-flex flex-row">
+                    <div class="col-md-4 mb-2">
+                      <label for="lastName" class="form-label">Last Name</label>
+                    </div>
+                    <div class="col-md-8 mb-2">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="lastName"
+                        name="lastName"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="d-flex flex-row">
+                    <div class="col-md-4 mb-2">
+                      <label for="streetNumber" class="form-label"
+                        >Street Number</label
+                      >
+                    </div>
+                    <div class="col-md-8 mb-2">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="streetNumber"
+                        name="streetNumber"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="d-flex flex-row">
+                    <div class="col-md-4 mb-2">
+                      <label for="streetName" class="form-label"
+                        >Street Name</label
+                      >
+                    </div>
+                    <div class="col-md-8 mb-2">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="streetName"
+                        name="streetName"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="d-flex flex-row">
+                    <div class="col-md-4 mb-2">
+                      <label for="region" class="form-label">State</label>
+                    </div>
+                    <div class="col-md-8 mb-2">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="region"
+                        name="region"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="d-flex flex-row">
+                    <div class="col-md-4 mb-2">
+                      <label for="city" class="form-label">City</label>
+                    </div>
+                    <div class="col-md-8 mb-2">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="city"
+                        name="city"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="d-flex flex-row">
+                    <div class="col-md-4 mb-2">
+                      <label for="country" class="form-label">Country</label>
+                    </div>
+                    <div class="col-md-8 mb-2">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="country"
+                        name="country"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="d-flex flex-row">
+                    <div class="col-md-4 mb-2">
+                      <label for="email" class="form-label">Email</label>
+                    </div>
+                    <div class="col-md-8 mb-2">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="email"
+                        name="email"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="updateShippingAddress()">
+                Add Shipping Address
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <br />
+      <main class="d-flex flex-nowrap">
+        <div class="row h-100 w-100">
+          <div class="d-flex col-md-12">
+            <div class="container col-md-12">
+              <pre
+                id="json-response"
+                class="mt-1 flex-fill d-flex overflow-auto"
+              ></pre>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<script>
+  function getCart() {
+    const jsonResponseDiv = document.getElementById('json-response');
+    jsonResponseDiv.textContent = '';
+
+    let cartId = localStorage.getItem('cartId');
+    let storeKey = localStorage.getItem('store');
+
+    if (storeKey && cartId) {
+      fetch(`/api/in-store/${storeKey}/carts/${cartId}`)
+        .then(handleResponse)
+        .then((cart) => {
+          console.log('Success:', cart);
+          jsonResponseDiv.textContent = JSON.stringify(cart, null, 2);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          jsonResponseDiv.textContent = error.message;
+        });
+    } else {
+      jsonResponseDiv.textContent = 'No current active cart';
+    }
+  }
+  function updateCart() {
+    let code = document.getElementById('code').value.trim();
+
+    const jsonResponseDiv = document.getElementById('json-response');
+    jsonResponseDiv.textContent = '';
+
+    let cartId = localStorage.getItem('cartId');
+    let storeKey = localStorage.getItem('store');
+
+    if (storeKey && cartId) {
+      const formData = {
+        discountCode: code,
+      };
+      fetch(`/api/in-store/${storeKey}/carts/${cartId}/discount-codes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+        .then(handleResponse)
+        .then((data) => {
+          console.log('Success:', data);
+          jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          jsonResponseDiv.textContent = error.message;
+        });
+    } else {
+      jsonResponseDiv.textContent = 'No current active cart';
+    }
+  }
+
+  function updateShippingAddress() {
+    const jsonResponseDiv = document.getElementById('json-response');
+    jsonResponseDiv.textContent = '';
+
+    let cartId = localStorage.getItem('cartId');
+    let storeKey = localStorage.getItem('store');
+
+    if (storeKey && cartId) {
+      const formData = {
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        streetNumber: document.getElementById('streetNumber').value,
+        streetName: document.getElementById('streetName').value,
+        city: document.getElementById('city').value,
+        region: document.getElementById('region').value,
+        country: document.getElementById('country').value,
+        email: document.getElementById('email').value,
+      };
+      fetch(`/api/in-store/${storeKey}/carts/${cartId}/shipping-address`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+        .then(handleResponse)
+        .then((data) => {
+          console.log('Success:', data);
+          jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          jsonResponseDiv.textContent = error.message;
+        });
+    } else {
+      jsonResponseDiv.textContent = 'No current active cart';
+    }
+  }
+</script>

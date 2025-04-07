@@ -1,0 +1,77 @@
+<div class="container py-5">
+  <div class="row h-100">
+    <div class="col-12 col-md-10">
+      <h2>commercetools Connect</h2>
+      <br />
+      <div class="accordion" id="connectorAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="task1">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapse1"
+              aria-expanded="true"
+              aria-controls="collapse1"
+            >
+              Create ConnectorStaged
+            </button>
+          </h2>
+          <div
+            id="collapse1"
+            class="accordion-collapse show"
+            aria-labelledby="task1"
+            data-bs-parent="#connectorAccordion"
+          >
+            <div class="accordion-body">
+              <span
+                >CREATE CONNECTORSTAGED -
+                <code>POST /connectors/draft</code></span
+              ><br /><br />
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="task2">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapse2"
+              aria-expanded="false"
+              aria-controls="collapse2"
+            >
+              Publish Connector
+            </button>
+          </h2>
+          <div
+            id="collapse2"
+            class="accordion-collapse collapse"
+            aria-labelledby="task2"
+            data-bs-parent="#typeAccordion"
+          >
+            <div class="accordion-body">
+              <span
+                >UPDATE ConnectorDraft -
+                <code>POST /connectors/draft/{id}</code></span
+              ><br /><br />
+              <button class="btn btn-primary" onclick="">
+                Update ConnectorStaged
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <br /><br />
+      <div class="flex-fill d-flex">
+        <div class="container col-10">
+          <pre
+            id="json-response"
+            class="mt-1 flex-fill d-flex overflow-auto"
+          ></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

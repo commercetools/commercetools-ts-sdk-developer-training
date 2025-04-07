@@ -1,0 +1,159 @@
+<div class="container-fluid py-5">
+  <div class="row h-100 w-100">
+    <div class="col-md-9">
+      <h2>Place Order</h2>
+      <br />
+      <div class="accordion" id="cartAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="task1">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapse1"
+              aria-expanded="true"
+              aria-controls="collapse1"
+            >
+              A customer should have the option to see cart summary and place
+              order.
+            </button>
+          </h2>
+          <div
+            id="collapse1"
+            class="accordion-collapse show"
+            aria-labelledby="task1"
+            data-bs-parent="#cartAccordion"
+          >
+            <div class="accordion-body">
+              <span>GET CART - <code>GET /carts/id</code></span
+              ><br /><br />
+              <div class="d-flex mb-3">
+                <button class="btn btn-primary" onclick="showCartSummary()">
+                  Review Cart</button
+                ><br />
+              </div>
+              <span>CREATE ORDER - <code>POST /orders</code></span
+              ><br /><br />
+              <div class="d-flex mb-3">
+                <button class="btn btn-primary" onclick="createOrder()">
+                  Place Order
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <br />
+      <div class="col-12 col-md-10">
+        <div id="cart-summary">
+          <div id="cart-version" class="d-none"><br /></div>
+          <div id="cart-id"><br /></div>
+          <div><strong id="customer-email"></strong> <br /></div>
+          <ul id="cart-items"></ul>
+          <div id="total-price"></div>
+          <div id="tax-details"></div>
+          <div id="shipping-details"></div>
+        </div>
+      </div>
+      <main class="d-flex flex-nowrap">
+        <div class="row h-100 w-100">
+          <div class="d-flex col-md-12">
+            <div class="container col-md-12">
+              <pre
+                id="json-response"
+                class="mt-1 flex-fill d-flex overflow-auto"
+              ></pre>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<script>
+  function createOrder() {
+    const jsonResponseDiv = document.getElementById('json-response');
+    jsonResponseDiv.textContent = '';
+    const formData = {
+      cartId: document.getElementById('cart-id').innerText,
+      cartVersion: document.getElementById('cart-version').innerText,
+    };
+
+    const storeKey = localStorage.getItem('store');
+
+    fetch(`/api/in-store/${storeKey}/orders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
+      .then(handleResponse)
+      .then((orderData) => {
+        console.log('Success:', orderData);
+        const cartSummaryDiv = document.getElementById('cart-summary');
+        cartSummaryDiv.innerHTML = '';
+
+        jsonResponseDiv.textContent = JSON.stringify(orderData, null, 2);
+        localStorage.setItem('orderNumber', orderData.orderNumber);
+        localStorage.removeItem('cartId');
+        localStorage.removeItem('customerId');
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        jsonResponseDiv.textContent = error.message;
+      });
+  }
+  function showCartSummary() {
+    const jsonResponseDiv = document.getElementById('json-response');
+    jsonResponseDiv.textContent = '';
+
+    let cartId = localStorage.getItem('cartId');
+    const storeKey = localStorage.getItem('store');
+    const locale = localStorage.getItem('locale');
+
+    if (cartId && storeKey) {
+      let url = `/api/in-store/${storeKey}/carts/${cartId}`;
+      fetch(url)
+        .then(handleResponse)
+        .then((cartData) => {
+          document.getElementById('cart-id').innerText = cartData.id;
+          document.getElementById('cart-version').innerText = cartData.version;
+          document.getElementById('customer-email').innerText =
+            cartData.customerEmail;
+
+          const itemsList = document.getElementById('cart-items');
+          itemsList.innerHTML = '';
+          cartData.lineItems.forEach((item) => {
+            const card = document.createElement('div');
+            card.classList.add('col-12', 'col-md-10');
+
+            card.innerHTML = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">${item.name[Object.keys(item.name)[0] ?? locale]}</h5>
+                                <p class="card-text">
+                                    <strong>Quantity:</strong> ${item.quantity} <br>
+                                    <strong>Price:</strong> ${item.price.value.currencyCode} ${(item.price.value.centAmount / 100).toFixed(2)} <br>
+                                    <strong>Total:</strong> ${item.price.value.currencyCode} ${(item.totalPrice.centAmount / 100).toFixed(2)}
+                                </p>
+                            </div>
+                        </div>
+                    `;
+            itemsList.appendChild(card);
+          });
+          document.getElementById('total-price').innerHTML =
+            '<strong>Cart Total:</strong> ' +
+            cartData.totalPrice.currencyCode +
+            ' ' +
+            (cartData.totalPrice.centAmount / 100).toFixed(2);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          jsonResponseDiv.textContent = error.message;
+        });
+    }
+  }
+</script>

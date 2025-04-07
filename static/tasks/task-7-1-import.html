@@ -1,0 +1,108 @@
+<div class="container py-5">
+  <div class="row h-100">
+    <div class="col-md-9">
+      <h2>Import API</h2>
+      <br />
+      <div class="accordion" id="typeAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="task1">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapse1"
+              aria-expanded="true"
+              aria-controls="collapse1"
+            >
+              Products from a CSV file must be imported daily.
+            </button>
+          </h2>
+          <div
+            id="collapse1"
+            class="accordion-collapse show"
+            aria-labelledby="task1"
+            data-bs-parent="#typeAccordion"
+          >
+            <div class="accordion-body">
+              <span>IMPORT PRODUCTS - <code>POST /import</code></span
+              ><br /><br />
+              <div class="row">
+                <div class="col-8">
+                  <div class="form-group">
+                    <input
+                      type="file"
+                      class="form-control-file"
+                      id="file"
+                      name="file"
+                      required
+                    />
+                  </div>
+                </div>
+                <div
+                  class="col-4 d-flex align-items-center justify-content-end"
+                >
+                  <button
+                    class="btn btn-primary text-nowrap"
+                    onclick="importProducts()"
+                  >
+                    Import Now..
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <br /><br />
+      <main class="d-flex flex-nowrap">
+        <div class="row h-100">
+          <div class="d-flex col-md-12">
+            <div class="container col-md-6">
+              <pre
+                id="json-response"
+                class="mt-1 flex-fill d-flex overflow-auto"
+              ></pre>
+            </div>
+            <div class="container col-md-6">
+              <div id="results"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<script>
+  function importProducts() {
+    const jsonResponseDiv = document.getElementById('json-response');
+    jsonResponseDiv.textContent = '';
+
+    const fileInput = document.getElementById('file');
+    if (!fileInput.files || fileInput.files.length === 0) {
+      document.getElementById('results').innerHTML =
+        "<span class='text-danger'>Please select a file to upload.</span>";
+      return;
+    }
+
+    const file = fileInput.files[0];
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('/api/import-products', {
+      method: 'POST',
+      body: formData,
+    })
+      .then(handleResponse)
+      .then((data) => {
+        console.log('Success:', data);
+        jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        jsonResponseDiv.textContent = error.message;
+      });
+  }
+</script>
