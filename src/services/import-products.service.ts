@@ -17,7 +17,7 @@ export class ImportProductsService {
   ) {}
 
   async importProductData(csvString: string) {
-    const importContainerKey = 'sf-import-container';
+    const importContainerKey = participantNamePrefix + '-import-container';
     const productDrafts = await this.convertCsvToProductDrafts(csvString);
 
     return this.importApiRoot
