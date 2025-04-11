@@ -1,4 +1,7 @@
-import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk';
+import {
+  ByProjectKeyRequestBuilder,
+  GraphQLResponse,
+} from '@commercetools/platform-sdk';
 import { Inject, Injectable } from '@nestjs/common';
 import { API_ROOT } from 'src/commercetools/api-client.module';
 import { OrdersGetDto } from 'src/dtos/graphql.dto';
@@ -9,10 +12,8 @@ export class GraphqlService {
     @Inject(API_ROOT) private readonly apiRoot: ByProjectKeyRequestBuilder,
   ) {}
 
-  getOrdersByEmail(orderDetails: OrdersGetDto) {
+  getOrdersByEmail(orderDetails: OrdersGetDto): Promise<GraphQLResponse> {
     const { storeKey, email } = orderDetails;
-
-    // TODO: Use GraphQL Explorer to build a query that returns orders for the customer email in the request.
 
     const query = `
     query MyQuery($storeKey: KeyReferenceInput!, $condition: String!) {

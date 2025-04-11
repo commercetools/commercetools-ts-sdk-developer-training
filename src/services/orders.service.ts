@@ -1,6 +1,12 @@
 import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import { OrderCreateDto } from 'src/dtos/orders.dto';
-import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk';
+import {
+  ByProjectKeyRequestBuilder,
+  Order,
+  OrderFromCartDraft,
+  OrderSetShippingAddressCustomTypeAction,
+  OrderUpdateAction,
+} from '@commercetools/platform-sdk';
 import { API_ROOT } from 'src/commercetools/api-client.module';
 import { CustomFieldsUpdateDto } from 'src/dtos/extensions.dto';
 import { CUSTOM_TYPE_KEY } from './extensions.service';
@@ -15,63 +21,52 @@ export class OrdersService {
     private readonly customersService: CustomersService,
   ) {}
 
-  createOrder(orderDetails: OrderCreateDto) {
+  createOrder(orderDetails: OrderCreateDto): Promise<Order> {
     const { cartId, cartVersion, storeKey } = orderDetails;
-    const orderNumber = orderNamePrefix + '_' + Date.now().toString(36);
 
-    throw new NotImplementedException('This feature is not yet supported.');
+    const orderFromCartDraft: OrderFromCartDraft = {
+      version: cartVersion,
+      cart: {
+        id: cartId,
+        typeId: 'cart',
+      },
+      orderNumber: orderNamePrefix + '_' + Date.now().toString(36),
+    };
 
-    // return this.apiRoot
-    //   .inStoreKeyWithStoreKeyValue({ storeKey })
-    //   .orders()
-    //   .post({
-    //     body: {
-    //       version: cartVersion,
-    //       cart: {
-    //         id: cartId,
-    //         typeId: 'cart',
-    //       },
-    //       orderNumber,
-    //     },
-    //   })
-    //   .execute()
-    //   .then((response) => response.body);
+    throw new NotImplementedException('Feature not implemented');
   }
 
-  async updateOrderCustomFields(customFieldsDetails: CustomFieldsUpdateDto) {
+  async updateShippingAddressCustomFields(
+    customFieldsDetails: CustomFieldsUpdateDto,
+  ): Promise<Order> {
     const { orderNumber, instructions, time, storeKey } = customFieldsDetails;
 
-    let existingOrder = await this.getOrderByNumber(orderNumber, storeKey);
+    let order = await this.getOrderByNumber(orderNumber, storeKey);
+    const orderVersion = order.version;
 
-    throw new NotImplementedException('This feature is not yet supported.');
+    const updateShippingAddressCustomFields: OrderSetShippingAddressCustomTypeAction =
+      {
+        action: 'setShippingAddressCustomType',
+        type: {
+          key: CUSTOM_TYPE_KEY,
+          typeId: 'type',
+        },
+        fields: {
+          time,
+          instructions,
+        },
+      };
 
-    // return this.apiRoot
-    //   .inStoreKeyWithStoreKeyValue({ storeKey })
-    //   .orders()
-    //   .withOrderNumber({ orderNumber })
-    //   .post({
-    //     body: {
-    //       version: existingOrder.version,
-    //       actions: [
-    //         {
-    //           action: 'setShippingAddressCustomType',
-    //           type: {
-    //             key: CUSTOM_TYPE_KEY,
-    //             typeId: 'type',
-    //           },
-    //           fields: {
-    //             time,
-    //             instructions,
-    //           },
-    //         },
-    //       ],
-    //     },
-    //   })
-    //   .execute()
-    //   .then((response) => response.body);
+    const orderUpdateActions: OrderUpdateAction[] = [];
+    orderUpdateActions.push(updateShippingAddressCustomFields);
+
+    throw new NotImplementedException('Feature not implemented');
   }
 
-  private getOrderByNumber(orderNumber: string, storeKey: string) {
+  private getOrderByNumber(
+    orderNumber: string,
+    storeKey: string,
+  ): Promise<Order> {
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
       .orders()

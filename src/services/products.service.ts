@@ -3,10 +3,11 @@ import {
   _SearchQuery,
   _SearchQueryExpression,
   ByProjectKeyRequestBuilder,
+  ProductPagedSearchResponse,
+  ProductSearchFacetExpression,
   ProductSearchRequest,
 } from '@commercetools/platform-sdk';
 import { ProductsSearchDto } from 'src/dtos/products.dto';
-import { SearchQueryBuilder } from '../types/search.type';
 import { isSDKError } from '../types/error.type';
 import { ObjectNotFoundException } from '../errors/object-not-found.error';
 import { API_ROOT } from '../commercetools/api-client.module';
@@ -30,11 +31,19 @@ export class ProductsService {
     private readonly storesService: StoresService,
   ) {}
 
-  async searchProducts(searchDetails: ProductsSearchDto) {
-    const { keyword, storeKey, facets, currency, country, locale } =
-      searchDetails;
+  async searchProducts(
+    searchDetails: ProductsSearchDto,
+  ): Promise<ProductPagedSearchResponse> {
+    const {
+      keyword,
+      storeKey,
+      facets: useFacets,
+      currency,
+      country,
+      locale,
+    } = searchDetails;
 
-    let query: _SearchQuery | undefined;
+    let searchQuery: _SearchQuery | undefined;
 
     // if (storeKey || keyword) {
     //   let storeQueryExpression: _SearchQueryExpression | undefined;
@@ -60,15 +69,17 @@ export class ProductsService {
     //   }
 
     //   if (storeQueryExpression && fullTextQueryExpression) {
-    //     query = { and: [storeQueryExpression, fullTextQueryExpression] };
+    //     searchQuery = { and: [storeQueryExpression, fullTextQueryExpression] };
     //   } else {
-    //     query = storeQueryExpression || fullTextQueryExpression;
+    //     searchQuery = storeQueryExpression || fullTextQueryExpression;
     //   }
     // }
 
+    const facets = useFacets ? createFacets(locale) : undefined;
+
     const productSearchRequest: ProductSearchRequest = {
-      query,
-      facets: facets ? createFacets(locale) : undefined,
+      query: searchQuery,
+      facets,
       sort: [
         {
           field: 'variants.prices.centAmount',
@@ -76,13 +87,13 @@ export class ProductsService {
           mode: 'max',
         },
       ],
-      // markMatchingVariants: true,
-      // productProjectionParameters: {
-      //   priceCurrency: currency ?? 'EUR',
-      //   priceCountry: country ?? 'DE',
-      //   storeProjection: storeKey || undefined,
-      //   localeProjection: locale ? [locale!] : undefined,
-      // },
+      markMatchingVariants: true,
+      productProjectionParameters: {
+        priceCurrency: currency ?? 'EUR',
+        priceCountry: country ?? 'DE',
+        storeProjection: storeKey || undefined,
+        localeProjection: locale ? [locale!] : undefined,
+      },
     };
 
     return this.apiRoot
@@ -93,7 +104,7 @@ export class ProductsService {
       .then((response) => response.body);
   }
 
-  private async getStoreId(storeKey: string) {
+  private async getStoreId(storeKey: string): Promise<string> {
     try {
       const store = await this.storesService.getStoreByKey(storeKey);
 
@@ -109,7 +120,9 @@ export class ProductsService {
   }
 }
 
-function createFacets(locale: string = 'en-US') {
+function createFacets(
+  locale: string = 'en-US',
+): ProductSearchFacetExpression[] {
   return [
     {
       distinct: {

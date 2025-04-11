@@ -1,4 +1,14 @@
-import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk';
+import {
+  ByProjectKeyRequestBuilder,
+  Cart,
+  CartAddDiscountCodeAction,
+  CartAddLineItemAction,
+  CartDraft,
+  CartSetCustomerEmailAction,
+  CartSetShippingAddressAction,
+  CartSetShippingMethodAction,
+  CartUpdateAction,
+} from '@commercetools/platform-sdk';
 import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import {
   CartCreateDto,
@@ -6,6 +16,7 @@ import {
   LineItemsAddDto,
   DiscountCodeApplyDto,
   ShippingAddressUpdateDto,
+  ShippingMethodUpdateDto,
 } from '../dtos/carts.dto';
 
 import { API_ROOT } from 'src/commercetools/api-client.module';
@@ -16,173 +27,138 @@ export class CartsService {
     @Inject(API_ROOT) private readonly apiRoot: ByProjectKeyRequestBuilder,
   ) {}
 
-  async createCart(cartDetails: CartCreateDto) {
+  async createCart(cartDetails: CartCreateDto): Promise<Cart> {
     const { storeKey, sessionId, sku, quantity, currency, country } =
       cartDetails;
 
-    throw new NotImplementedException('This feature is not yet supported.');
+    let cartDraft: CartDraft;
 
-    // return this.apiRoot
-    //   .inStoreKeyWithStoreKeyValue({ storeKey })
-    //   .carts()
-    //   .post({
-    //     body: {
-    //       anonymousId: sessionId,
-    //       currency: currency ?? 'EUR',
-    //       country: country ?? 'DE',
-    //       deleteDaysAfterLastModification: 30,
-    //       lineItems: [
-    //         {
-    //           sku,
-    //           quantity: quantity ?? 1,
-    //         },
-    //       ],
-    //     },
-    //   })
-    //   .execute()
-    //   .then((response) => response.body);
+    throw new NotImplementedException('Feature not implemented');
   }
 
-  async addLineItemsToCart(lineItemsDetails: LineItemsAddDto) {
+  async addLineItemsToCart(lineItemsDetails: LineItemsAddDto): Promise<Cart> {
     const { id, storeKey, sku, quantity, supplyChannel, distributionChannel } =
       lineItemsDetails;
 
     const cart = await this.getCartById({ id, storeKey });
     const cartVersion = cart.version;
 
-    throw new NotImplementedException('This feature is not yet supported.');
+    const cartUpdateActions: CartUpdateAction[] = [];
 
-    // return this.apiRoot
-    //   .inStoreKeyWithStoreKeyValue({ storeKey })
-    //   .carts()
-    //   .withId({ ID: id })
-    //   .post({
-    //     body: {
-    //       version: cartVersion,
-    //       actions: [
-    //         {
-    //           action: 'addLineItem',
-    //           sku,
-    //           quantity,
-    //         },
-    //       ],
-    //     },
-    //   })
-    //   .execute()
-    //   .then((response) => response.body);
+    let addLineItemUpdateAction: CartAddLineItemAction;
+
+    throw new NotImplementedException('Feature not implemented');
   }
 
-  async applyDiscountCodeToCart(discountCodeDetails: DiscountCodeApplyDto) {
+  async applyDiscountCodeToCart(
+    discountCodeDetails: DiscountCodeApplyDto,
+  ): Promise<Cart> {
     const { id, storeKey, discountCode } = discountCodeDetails;
 
     const cart = await this.getCartById({ id, storeKey });
     const cartVersion = cart.version;
 
-    throw new NotImplementedException('This feature is not yet supported.');
+    const cartUpdateActions: CartUpdateAction[] = [];
 
-    // return this.apiRoot
-    //   .inStoreKeyWithStoreKeyValue({ storeKey })
-    //   .carts()
-    //   .withId({ ID: id })
-    //   .post({
-    //     body: {
-    //       version: cartVersion,
-    //       actions: [
-    //         {
-    //           action: 'addDiscountCode',
-    //           code: discountCode,
-    //         },
-    //       ],
-    //     },
-    //   })
-    //   .execute()
-    //   .then((response) => response.body);
-  }
+    const addDiscountCodeUpdateAction: CartAddDiscountCodeAction = {
+      action: 'addDiscountCode',
+      code: discountCode,
+    };
 
-  async updateCartShippingAddress(
-    shippingAddressDetails: ShippingAddressUpdateDto,
-  ) {
-    const { id, storeKey, firstName, lastName, country, email } =
-      shippingAddressDetails;
+    cartUpdateActions.push(addDiscountCodeUpdateAction);
 
-    let cart = await this.getCartById({ id, storeKey });
-    let cartVersion = cart.version;
-
-    throw new NotImplementedException('This feature is not yet supported.');
-
-    // cart = await this.apiRoot
-    //   .inStoreKeyWithStoreKeyValue({ storeKey })
-    //   .carts()
-    //   .withId({ ID: id })
-    //   .post({
-    //     body: {
-    //       version: cartVersion,
-    //       actions: [
-    //         {
-    //           action: 'setShippingAddress',
-    //           address: {
-    //             firstName,
-    //             lastName,
-    //             country,
-    //             email,
-    //           },
-    //         },
-    //         {
-    //           action: 'setCustomerEmail',
-    //           email,
-    //         },
-    //       ],
-    //     },
-    //   })
-    //   .execute()
-    //   .then((response) => response.body);
-
-    cartVersion = cart.version;
-
-    const matchingShippingMethod = await this.fetchMatchingShippingMethod(
-      id,
-      storeKey,
-    );
-
-    cart = await this.apiRoot
+    return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
       .carts()
       .withId({ ID: id })
       .post({
         body: {
           version: cartVersion,
-          actions: [
-            {
-              action: 'setShippingMethod',
-              shippingMethod: {
-                typeId: 'shipping-method',
-                id: matchingShippingMethod.id,
-              },
-            },
-          ],
+          actions: cartUpdateActions,
         },
       })
       .execute()
       .then((response) => response.body);
-
-    return cart;
   }
 
-  private fetchMatchingShippingMethod(cartId: string, storeKey: string) {
+  async updateCartShippingAddress(
+    shippingAddressDetails: ShippingAddressUpdateDto,
+  ): Promise<Cart> {
+    const { id, storeKey, firstName, lastName, country, email } =
+      shippingAddressDetails;
+
+    let cart = await this.getCartById({ id, storeKey });
+    let cartVersion = cart.version;
+
+    const cartUpdateActions: CartUpdateAction[] = [];
+
+    const setShippingAddressUpdateAction: CartSetShippingAddressAction = {
+      action: 'setShippingAddress',
+      address: {
+        firstName,
+        lastName,
+        country,
+        email,
+      },
+    };
+
+    const setCustomerEmailUpdateAction: CartSetCustomerEmailAction = {
+      action: 'setCustomerEmail',
+      email,
+    };
+
+    cartUpdateActions.push(setShippingAddressUpdateAction);
+    cartUpdateActions.push(setCustomerEmailUpdateAction);
+
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
-      .shippingMethods()
-      .matchingCart()
-      .get({
-        queryArgs: {
-          cartId,
+      .carts()
+      .withId({ ID: id })
+      .post({
+        body: {
+          version: cartVersion,
+          actions: cartUpdateActions,
         },
       })
       .execute()
-      .then((response) => response.body.results[0]);
+      .then((response) => response.body);
   }
 
-  public getCartById(params: CartGetParamsDto) {
+  async updateCartShippingMethod(
+    shippingMethodDetails: ShippingMethodUpdateDto,
+  ): Promise<Cart> {
+    const { id, storeKey, shippingMethodId } = shippingMethodDetails;
+
+    const cart = await this.getCartById({ id, storeKey });
+    const cartVersion = cart.version;
+
+    const cartUpdateActions: CartUpdateAction[] = [];
+
+    const setShippingMethodUpdateAction: CartSetShippingMethodAction = {
+      action: 'setShippingMethod',
+      shippingMethod: {
+        typeId: 'shipping-method',
+        id: shippingMethodId,
+      },
+    };
+
+    cartUpdateActions.push(setShippingMethodUpdateAction);
+
+    return this.apiRoot
+      .inStoreKeyWithStoreKeyValue({ storeKey })
+      .carts()
+      .withId({ ID: id })
+      .post({
+        body: {
+          version: cartVersion,
+          actions: cartUpdateActions,
+        },
+      })
+      .execute()
+      .then((response) => response.body);
+  }
+
+  public getCartById(params: CartGetParamsDto): Promise<Cart> {
     const { id, storeKey } = params;
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })

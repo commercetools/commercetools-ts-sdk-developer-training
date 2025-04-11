@@ -2,6 +2,7 @@ import {
   ByProjectKeyRequestBuilder,
   CustomerDraft,
   CustomerSignin,
+  CustomerSignInResult,
 } from '@commercetools/platform-sdk';
 import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import { CustomerRegisterDto } from 'src/dtos/customers.dto';
@@ -14,7 +15,9 @@ export class CustomersService {
     @Inject(API_ROOT) private readonly apiRoot: ByProjectKeyRequestBuilder,
   ) {}
 
-  async createCustomer(customerRegistrationDetails: CustomerRegisterDto) {
+  async createCustomer(
+    customerRegistrationDetails: CustomerRegisterDto,
+  ): Promise<CustomerSignInResult> {
     const {
       email,
       password,
@@ -29,7 +32,7 @@ export class CustomersService {
       defaultBillingAddress,
     } = customerRegistrationDetails;
 
-    let body: CustomerDraft = {
+    let customerDraft: CustomerDraft = {
       email,
       password,
       firstName,
@@ -53,23 +56,16 @@ export class CustomersService {
       }), // Adds address and default address logic if country is provided
     };
 
-    throw new NotImplementedException('This feature is not yet supported.');
-
-    // return this.apiRoot
-    //   .inStoreKeyWithStoreKeyValue({ storeKey })
-    //   .customers()
-    //   .post({
-    //     body,
-    //   })
-    //   .execute()
-    //   .then((response) => response.body);
+    throw new NotImplementedException('Feature not implemented');
   }
 
-  authenticateCustomer(customerAuthenticationDetails: CustomerAuthenticateDto) {
+  authenticateCustomer(
+    customerAuthenticationDetails: CustomerAuthenticateDto,
+  ): Promise<CustomerSignInResult> {
     const { email, password, anonymousCartId, storeKey } =
       customerAuthenticationDetails;
 
-    const body: CustomerSignin = {
+    const customerSignIn: CustomerSignin = {
       email,
       password,
       ...(anonymousCartId && {
@@ -77,18 +73,17 @@ export class CustomersService {
           id: anonymousCartId,
           typeId: 'cart',
         },
-        // anonymousCartSignInMode: 'MergeWithExistingCustomerCart', //UseAsNewActiveCustomerCart
+        // anonymousCartSignInMode: 'UseAsNewActiveCustomerCart',
       }),
     };
 
-    throw new NotImplementedException('This feature is not yet supported.');
-    //   return this.apiRoot
-    //     .inStoreKeyWithStoreKeyValue({ storeKey })
-    //     .login()
-    //     .post({
-    //       body,
-    //     })
-    //     .execute()
-    //     .then((response) => response.body);
+    return this.apiRoot
+      .inStoreKeyWithStoreKeyValue({ storeKey })
+      .login()
+      .post({
+        body: customerSignIn,
+      })
+      .execute()
+      .then((response) => response.body);
   }
 }

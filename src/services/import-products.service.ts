@@ -1,5 +1,7 @@
 import {
   ByProjectKeyRequestBuilder,
+  ImportResponse,
+  ImportSummary,
   ProductDraftImport,
 } from '@commercetools/importapi-sdk';
 import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
@@ -16,27 +18,14 @@ export class ImportProductsService {
     private readonly importApiRoot: ByProjectKeyRequestBuilder,
   ) {}
 
-  async importProductData(csvString: string) {
+  async importProductData(csvString: string): Promise<ImportResponse> {
     const importContainerKey = participantNamePrefix + '-import-container';
     const productDrafts = await this.convertCsvToProductDrafts(csvString);
 
-    throw new NotImplementedException('This feature is not yet supported.');
-
-    // return this.importApiRoot
-    //   .productDrafts()
-    //   .importContainers()
-    //   .withImportContainerKeyValue({ importContainerKey })
-    //   .post({
-    //     body: {
-    //       type: 'product-draft',
-    //       resources: productDrafts,
-    //     },
-    //   })
-    //   .execute()
-    //   .then((response) => response.body);
+    throw new NotImplementedException('Feature not implemented');
   }
 
-  getImportSummary(importContainerKey: string) {
+  getImportSummary(importContainerKey: string): Promise<ImportSummary> {
     return this.importApiRoot
       .importContainers()
       .withImportContainerKeyValue({ importContainerKey })

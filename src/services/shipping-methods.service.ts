@@ -1,4 +1,7 @@
-import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk';
+import {
+  ByProjectKeyRequestBuilder,
+  ShippingMethodPagedQueryResponse,
+} from '@commercetools/platform-sdk';
 import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import { isSDKError } from '../types/error.type';
 import { ObjectNotFoundException } from '../errors/object-not-found.error';
@@ -11,35 +14,51 @@ export class ShippingMethodsService {
     @Inject(API_ROOT) private readonly apiRoot: ByProjectKeyRequestBuilder,
   ) {}
 
-  getAllShippingMethods() {
-    throw new NotImplementedException('This feature is not yet supported.');
+  getAllShippingMethods(): Promise<ShippingMethodPagedQueryResponse> {
+    throw new NotImplementedException('Feature not implemented');
   }
 
   getShippingMethodByKey(key: string) {
-    throw new NotImplementedException('This feature is not yet supported.');
+    throw new NotImplementedException('Feature not implemented');
   }
 
-  checkShippingMethodExists(key: string) {
-    throw new NotImplementedException('This feature is not yet supported.');
+  checkShippingMethodExists(key: string): Promise<void> {
+    return this.apiRoot
+      .shippingMethods()
+      .withKey({ key })
+      .head()
+      .execute()
+      .then((response) => response.body)
+      .catch((error) => {
+        if (isSDKError(error) && error.statusCode === 404) {
+          throw new ObjectNotFoundException(
+            `Shipping method with key '${key}' does not exist`,
+          );
+        }
+        throw error;
+      });
   }
 
-  getShippingMethodsByLocation(countryCode: string) {
-    throw new NotImplementedException('This feature is not yet supported.');
+  getShippingMethodsByLocation(
+    countryCode: string,
+  ): Promise<ShippingMethodPagedQueryResponse> {
+    throw new NotImplementedException('Feature not implemented');
   }
-}
 
-function handleError(error: unknown) {
-  if (isSDKError(error)) {
-    if (error.statusCode === 404) {
-      throw new ObjectNotFoundException(
-        `Shipping method with given key not found`,
-      );
-    } else if (error.statusCode === 400) {
-      throw new RequestParamMalformedException(`Parameter is malformed`);
-    } else {
-      throw error;
-    }
-  } else {
-    throw error;
+  getMatchingShippingMethods(
+    storeKey: string,
+    cartId: string,
+  ): Promise<ShippingMethodPagedQueryResponse> {
+    return this.apiRoot
+      .inStoreKeyWithStoreKeyValue({ storeKey })
+      .shippingMethods()
+      .matchingCart()
+      .get({
+        queryArgs: {
+          cartId,
+        },
+      })
+      .execute()
+      .then((response) => response.body);
   }
 }

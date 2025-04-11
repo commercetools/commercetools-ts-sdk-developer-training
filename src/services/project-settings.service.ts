@@ -7,7 +7,7 @@ export class ProjectSettingsService {
   constructor(
     @Inject(API_ROOT) private readonly apiRoot: ByProjectKeyRequestBuilder,
   ) {}
-  getCurrencies() {
+  getCurrencies(): Promise<Array<string>> {
     return this.apiRoot
       .get()
       .execute()
