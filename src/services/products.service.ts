@@ -1,14 +1,26 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
+  _SearchQuery,
+  _SearchQueryExpression,
   ByProjectKeyRequestBuilder,
   ProductSearchRequest,
 } from '@commercetools/platform-sdk';
 import { ProductsSearchDto } from 'src/dtos/products.dto';
-import { SearchQueryBuilder } from '../types/search.type';
 import { isSDKError } from '../types/error.type';
 import { ObjectNotFoundException } from '../errors/object-not-found.error';
 import { API_ROOT } from '../commercetools/api-client.module';
 import { StoresService } from './stores.service';
+
+// interface _SearchQueryExpression {
+//   exact?: { field: string; value: string };
+//   fullText?: {
+//     field: string;
+//     language: string;
+//     value: string;
+//     mustMatch: 'any' | 'all';
+//     caseInsensitive: boolean;
+//   };
+// }
 
 @Injectable()
 export class ProductsService {
@@ -21,22 +33,41 @@ export class ProductsService {
     const { keyword, storeKey, facets, currency, country, locale } =
       searchDetails;
 
-    const queryBuilder = new SearchQueryBuilder();
+    let query: _SearchQuery | undefined;
 
-    if (storeKey) {
-      const storeId = await this.getStoreId(storeKey);
-      queryBuilder.addExactMatch('stores', storeId);
+    if (storeKey || keyword) {
+      let storeQueryExpression: _SearchQueryExpression | undefined;
+      let fullTextQueryExpression: _SearchQueryExpression | undefined;
+
+      if (storeKey) {
+        const storeId = await this.getStoreId(storeKey!);
+        storeQueryExpression = {
+          exact: { field: 'stores', value: storeId },
+        };
+      }
+
+      if (keyword) {
+        fullTextQueryExpression = {
+          fullText: {
+            field: 'name',
+            language: locale ?? 'en-US',
+            value: keyword,
+            mustMatch: 'any',
+            caseInsensitive: true,
+          },
+        };
+      }
+
+      if (storeQueryExpression && fullTextQueryExpression) {
+        query = { and: [storeQueryExpression, fullTextQueryExpression] };
+      } else {
+        query = storeQueryExpression || fullTextQueryExpression;
+      }
     }
-
-    if (keyword) {
-      queryBuilder.addFullTextSearch('name', keyword);
-    }
-
-    const query = queryBuilder.build();
 
     const productSearchRequest: ProductSearchRequest = {
       query,
-      facets: facets ? createFacets() : undefined,
+      facets: facets ? createFacets(locale) : undefined,
       sort: [
         {
           field: 'variants.prices.centAmount',
@@ -49,7 +80,7 @@ export class ProductsService {
         priceCurrency: currency ?? 'EUR',
         priceCountry: country ?? 'DE',
         storeProjection: storeKey || undefined,
-        localeProjection: locale ? [locale] : undefined,
+        localeProjection: locale ? [locale!] : undefined,
       },
     };
 
@@ -77,14 +108,14 @@ export class ProductsService {
   }
 }
 
-function createFacets() {
+function createFacets(locale: string = 'en-US') {
   return [
     {
       distinct: {
         name: 'Color',
         field: 'variants.attributes.color',
         fieldType: 'ltext',
-        language: 'en-US',
+        language: locale,
         level: 'variants',
         scope: 'query',
       },
@@ -94,7 +125,7 @@ function createFacets() {
         name: 'Finish',
         field: 'variants.attributes.finish',
         fieldType: 'ltext',
-        language: 'en-US',
+        language: locale,
         level: 'variants',
         scope: 'query',
       },

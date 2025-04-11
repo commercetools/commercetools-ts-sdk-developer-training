@@ -27,11 +27,6 @@ export class CartCreateBodyDto {
 
   @IsOptional()
   @IsNotEmpty()
-  @IsLocale()
-  locale?: string;
-
-  @IsOptional()
-  @IsNotEmpty()
   @IsISO31661Alpha2()
   country?: string;
 
