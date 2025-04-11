@@ -1,4 +1,13 @@
-import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk';
+import {
+  ByProjectKeyRequestBuilder,
+  CartAddDiscountCodeAction,
+  CartAddLineItemAction,
+  CartDraft,
+  CartSetCustomerEmailAction,
+  CartSetShippingAddressAction,
+  CartSetShippingMethodAction,
+  CartUpdateAction,
+} from '@commercetools/platform-sdk';
 import { Inject, Injectable } from '@nestjs/common';
 import {
   CartCreateDto,
@@ -21,22 +30,24 @@ export class CartsService {
     const { storeKey, sessionId, sku, quantity, currency, country } =
       cartDetails;
 
+    const cartDraft: CartDraft = {
+      anonymousId: sessionId,
+      currency: currency ?? 'EUR',
+      country: country ?? 'DE',
+      deleteDaysAfterLastModification: 30,
+      lineItems: [
+        {
+          sku,
+          quantity: quantity ?? 1,
+        },
+      ],
+    };
+
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
       .carts()
       .post({
-        body: {
-          anonymousId: sessionId,
-          currency: currency ?? 'EUR',
-          country: country ?? 'DE',
-          deleteDaysAfterLastModification: 30,
-          lineItems: [
-            {
-              sku,
-              quantity: quantity ?? 1,
-            },
-          ],
-        },
+        body: cartDraft,
       })
       .execute()
       .then((response) => response.body);
@@ -49,6 +60,28 @@ export class CartsService {
     const cart = await this.getCartById({ id, storeKey });
     const cartVersion = cart.version;
 
+    const cartUpdateActions: CartUpdateAction[] = [];
+
+    const addLineItemUpdateAction: CartAddLineItemAction = {
+      action: 'addLineItem',
+      sku,
+      quantity,
+      ...(supplyChannel && {
+        supplyChannel: {
+          typeId: 'channel',
+          key: supplyChannel,
+        },
+      }),
+      ...(distributionChannel && {
+        distributionChannel: {
+          typeId: 'channel',
+          key: distributionChannel,
+        },
+      }),
+    };
+
+    cartUpdateActions.push(addLineItemUpdateAction);
+
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
       .carts()
@@ -56,25 +89,7 @@ export class CartsService {
       .post({
         body: {
           version: cartVersion,
-          actions: [
-            {
-              action: 'addLineItem',
-              sku,
-              quantity,
-              ...(supplyChannel && {
-                supplyChannel: {
-                  typeId: 'channel',
-                  key: supplyChannel,
-                },
-              }),
-              ...(distributionChannel && {
-                distributionChannel: {
-                  typeId: 'channel',
-                  key: distributionChannel,
-                },
-              }),
-            },
-          ],
+          actions: cartUpdateActions,
         },
       })
       .execute()
@@ -87,6 +102,15 @@ export class CartsService {
     const cart = await this.getCartById({ id, storeKey });
     const cartVersion = cart.version;
 
+    const cartUpdateActions: CartUpdateAction[] = [];
+
+    const addDiscountCodeUpdateAction: CartAddDiscountCodeAction = {
+      action: 'addDiscountCode',
+      code: discountCode,
+    };
+
+    cartUpdateActions.push(addDiscountCodeUpdateAction);
+
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
       .carts()
@@ -94,12 +118,7 @@ export class CartsService {
       .post({
         body: {
           version: cartVersion,
-          actions: [
-            {
-              action: 'addDiscountCode',
-              code: discountCode,
-            },
-          ],
+          actions: cartUpdateActions,
         },
       })
       .execute()
@@ -115,6 +134,26 @@ export class CartsService {
     let cart = await this.getCartById({ id, storeKey });
     let cartVersion = cart.version;
 
+    const cartUpdateActions: CartUpdateAction[] = [];
+
+    const setShippingAddressUpdateAction: CartSetShippingAddressAction = {
+      action: 'setShippingAddress',
+      address: {
+        firstName,
+        lastName,
+        country,
+        email,
+      },
+    };
+
+    const setCustomerEmailUpdateAction: CartSetCustomerEmailAction = {
+      action: 'setCustomerEmail',
+      email,
+    };
+
+    cartUpdateActions.push(setShippingAddressUpdateAction);
+    cartUpdateActions.push(setCustomerEmailUpdateAction);
+
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
       .carts()
@@ -122,21 +161,7 @@ export class CartsService {
       .post({
         body: {
           version: cartVersion,
-          actions: [
-            {
-              action: 'setShippingAddress',
-              address: {
-                firstName,
-                lastName,
-                country,
-                email,
-              },
-            },
-            {
-              action: 'setCustomerEmail',
-              email,
-            },
-          ],
+          actions: cartUpdateActions,
         },
       })
       .execute()
@@ -151,6 +176,18 @@ export class CartsService {
     const cart = await this.getCartById({ id, storeKey });
     const cartVersion = cart.version;
 
+    const cartUpdateActions: CartUpdateAction[] = [];
+
+    const setShippingMethodUpdateAction: CartSetShippingMethodAction = {
+      action: 'setShippingMethod',
+      shippingMethod: {
+        typeId: 'shipping-method',
+        id: shippingMethodId,
+      },
+    };
+
+    cartUpdateActions.push(setShippingMethodUpdateAction);
+
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
       .carts()
@@ -158,15 +195,7 @@ export class CartsService {
       .post({
         body: {
           version: cartVersion,
-          actions: [
-            {
-              action: 'setShippingMethod',
-              shippingMethod: {
-                typeId: 'shipping-method',
-                id: shippingMethodId,
-              },
-            },
-          ],
+          actions: cartUpdateActions,
         },
       })
       .execute()

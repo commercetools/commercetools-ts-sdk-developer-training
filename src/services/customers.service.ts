@@ -1,6 +1,7 @@
 import {
   ByProjectKeyRequestBuilder,
   CustomerDraft,
+  CustomerSignin,
 } from '@commercetools/platform-sdk';
 import { Inject, Injectable } from '@nestjs/common';
 import { CustomerRegisterDto } from 'src/dtos/customers.dto';
@@ -28,7 +29,7 @@ export class CustomersService {
       defaultBillingAddress,
     } = customerRegistrationDetails;
 
-    let body: CustomerDraft = {
+    let customerDraft: CustomerDraft = {
       email,
       password,
       firstName,
@@ -56,7 +57,7 @@ export class CustomersService {
       .inStoreKeyWithStoreKeyValue({ storeKey })
       .customers()
       .post({
-        body,
+        body: customerDraft,
       })
       .execute()
       .then((response) => response.body);
@@ -66,21 +67,23 @@ export class CustomersService {
     const { email, password, anonymousCartId, storeKey } =
       customerAuthenticationDetails;
 
+    const customerSignIn: CustomerSignin = {
+      email,
+      password,
+      ...(anonymousCartId && {
+        anonymousCart: {
+          id: anonymousCartId,
+          typeId: 'cart',
+        },
+        // anonymousCartSignInMode: 'UseAsNewActiveCustomerCart',
+      }),
+    };
+
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
       .login()
       .post({
-        body: {
-          email,
-          password,
-          ...(anonymousCartId && {
-            anonymousCart: {
-              id: anonymousCartId,
-              typeId: 'cart',
-            },
-            // anonymousCartSignInMode: 'UseAsNewActiveCustomerCart',
-          }),
-        },
+        body: customerSignIn,
       })
       .execute()
       .then((response) => response.body);

@@ -1,6 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { OrderCreateDto } from 'src/dtos/orders.dto';
-import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk';
+import {
+  ByProjectKeyRequestBuilder,
+  OrderFromCartDraft,
+  OrderSetShippingAddressCustomTypeAction,
+  OrderUpdateAction,
+} from '@commercetools/platform-sdk';
 import { API_ROOT } from 'src/commercetools/api-client.module';
 import { CustomFieldsUpdateDto } from 'src/dtos/extensions.dto';
 import { CUSTOM_TYPE_KEY } from './extensions.service';
@@ -18,27 +23,48 @@ export class OrdersService {
   createOrder(orderDetails: OrderCreateDto) {
     const { cartId, cartVersion, storeKey } = orderDetails;
 
+    const orderFromCartDraft: OrderFromCartDraft = {
+      version: cartVersion,
+      cart: {
+        id: cartId,
+        typeId: 'cart',
+      },
+      orderNumber: orderNamePrefix + '_' + Date.now().toString(36),
+    };
+
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
       .orders()
       .post({
-        body: {
-          version: cartVersion,
-          cart: {
-            id: cartId,
-            typeId: 'cart',
-          },
-          orderNumber: orderNamePrefix + '_' + Date.now().toString(36),
-        },
+        body: orderFromCartDraft,
       })
       .execute()
       .then((response) => response.body);
   }
 
-  async updateOrderCustomFields(customFieldsDetails: CustomFieldsUpdateDto) {
+  async updateShippingAddressCustomFields(
+    customFieldsDetails: CustomFieldsUpdateDto,
+  ) {
     const { orderNumber, instructions, time, storeKey } = customFieldsDetails;
 
-    let existingOrder = await this.getOrderByNumber(orderNumber, storeKey);
+    let order = await this.getOrderByNumber(orderNumber, storeKey);
+    const orderVersion = order.version;
+
+    const updateShippingAddressCustomFields: OrderSetShippingAddressCustomTypeAction =
+      {
+        action: 'setShippingAddressCustomType',
+        type: {
+          key: CUSTOM_TYPE_KEY,
+          typeId: 'type',
+        },
+        fields: {
+          time,
+          instructions,
+        },
+      };
+
+    const orderUpdateActions: OrderUpdateAction[] = [];
+    orderUpdateActions.push(updateShippingAddressCustomFields);
 
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
@@ -46,20 +72,8 @@ export class OrdersService {
       .withOrderNumber({ orderNumber })
       .post({
         body: {
-          version: existingOrder.version,
-          actions: [
-            {
-              action: 'setShippingAddressCustomType',
-              type: {
-                key: CUSTOM_TYPE_KEY,
-                typeId: 'type',
-              },
-              fields: {
-                time,
-                instructions,
-              },
-            },
-          ],
+          version: orderVersion,
+          actions: orderUpdateActions,
         },
       })
       .execute()

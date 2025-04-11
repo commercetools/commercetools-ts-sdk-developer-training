@@ -3,6 +3,7 @@ import {
   _SearchQuery,
   _SearchQueryExpression,
   ByProjectKeyRequestBuilder,
+  ProductSearchFacetExpression,
   ProductSearchRequest,
 } from '@commercetools/platform-sdk';
 import { ProductsSearchDto } from 'src/dtos/products.dto';
@@ -30,10 +31,16 @@ export class ProductsService {
   ) {}
 
   async searchProducts(searchDetails: ProductsSearchDto) {
-    const { keyword, storeKey, facets, currency, country, locale } =
-      searchDetails;
+    const {
+      keyword,
+      storeKey,
+      facets: useFacets,
+      currency,
+      country,
+      locale,
+    } = searchDetails;
 
-    let query: _SearchQuery | undefined;
+    let searchQuery: _SearchQuery | undefined;
 
     if (storeKey || keyword) {
       let storeQueryExpression: _SearchQueryExpression | undefined;
@@ -59,15 +66,17 @@ export class ProductsService {
       }
 
       if (storeQueryExpression && fullTextQueryExpression) {
-        query = { and: [storeQueryExpression, fullTextQueryExpression] };
+        searchQuery = { and: [storeQueryExpression, fullTextQueryExpression] };
       } else {
-        query = storeQueryExpression || fullTextQueryExpression;
+        searchQuery = storeQueryExpression || fullTextQueryExpression;
       }
     }
 
+    const facets = useFacets ? createFacets(locale) : undefined;
+
     const productSearchRequest: ProductSearchRequest = {
-      query,
-      facets: facets ? createFacets(locale) : undefined,
+      query: searchQuery,
+      facets,
       sort: [
         {
           field: 'variants.prices.centAmount',
@@ -108,7 +117,9 @@ export class ProductsService {
   }
 }
 
-function createFacets(locale: string = 'en-US') {
+function createFacets(
+  locale: string = 'en-US',
+): ProductSearchFacetExpression[] {
   return [
     {
       distinct: {
