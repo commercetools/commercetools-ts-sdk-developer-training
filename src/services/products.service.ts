@@ -3,6 +3,7 @@ import {
   _SearchQuery,
   _SearchQueryExpression,
   ByProjectKeyRequestBuilder,
+  ProductPagedSearchResponse,
   ProductSearchFacetExpression,
   ProductSearchRequest,
 } from '@commercetools/platform-sdk';
@@ -30,7 +31,9 @@ export class ProductsService {
     private readonly storesService: StoresService,
   ) {}
 
-  async searchProducts(searchDetails: ProductsSearchDto) {
+  async searchProducts(
+    searchDetails: ProductsSearchDto,
+  ): Promise<ProductPagedSearchResponse> {
     const {
       keyword,
       storeKey,
@@ -101,7 +104,7 @@ export class ProductsService {
       .then((response) => response.body);
   }
 
-  private async getStoreId(storeKey: string) {
+  private async getStoreId(storeKey: string): Promise<string> {
     try {
       const store = await this.storesService.getStoreByKey(storeKey);
 

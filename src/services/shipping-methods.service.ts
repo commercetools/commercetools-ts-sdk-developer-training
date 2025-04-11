@@ -1,4 +1,7 @@
-import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk';
+import {
+  ByProjectKeyRequestBuilder,
+  ShippingMethodPagedQueryResponse,
+} from '@commercetools/platform-sdk';
 import { Inject, Injectable } from '@nestjs/common';
 import { isSDKError } from '../types/error.type';
 import { ObjectNotFoundException } from '../errors/object-not-found.error';
@@ -11,7 +14,7 @@ export class ShippingMethodsService {
     @Inject(API_ROOT) private readonly apiRoot: ByProjectKeyRequestBuilder,
   ) {}
 
-  getAllShippingMethods() {
+  getAllShippingMethods(): Promise<ShippingMethodPagedQueryResponse> {
     return this.apiRoot
       .shippingMethods()
       .get()
@@ -36,7 +39,7 @@ export class ShippingMethodsService {
       });
   }
 
-  checkShippingMethodExists(key: string) {
+  checkShippingMethodExists(key: string): Promise<void> {
     return this.apiRoot
       .shippingMethods()
       .withKey({ key })
@@ -53,7 +56,9 @@ export class ShippingMethodsService {
       });
   }
 
-  getShippingMethodsByLocation(countryCode: string) {
+  getShippingMethodsByLocation(
+    countryCode: string,
+  ): Promise<ShippingMethodPagedQueryResponse> {
     return this.apiRoot
       .shippingMethods()
       .matchingLocation()
@@ -74,7 +79,10 @@ export class ShippingMethodsService {
       });
   }
 
-  getMatchingShippingMethods(storeKey: string, cartId: string) {
+  getMatchingShippingMethods(
+    storeKey: string,
+    cartId: string,
+  ): Promise<ShippingMethodPagedQueryResponse> {
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
       .shippingMethods()

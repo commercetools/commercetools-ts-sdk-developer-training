@@ -1,6 +1,8 @@
 import {
   ByProjectKeyRequestBuilder,
+  CustomObject,
   CustomObjectDraft,
+  Type,
   TypeDraft,
 } from '@commercetools/platform-sdk';
 import { Inject, Injectable } from '@nestjs/common';
@@ -19,7 +21,9 @@ export class ExtensionsService {
     @Inject(API_ROOT) private readonly apiRoot: ByProjectKeyRequestBuilder,
   ) {}
 
-  getCustomObject(customObjectDetails: CustomObjectUpdateParamsDto) {
+  getCustomObject(
+    customObjectDetails: CustomObjectUpdateParamsDto,
+  ): Promise<CustomObject> {
     const { container, key } = customObjectDetails;
     return this.apiRoot
       .customObjects()
@@ -55,7 +59,9 @@ export class ExtensionsService {
       .then((response) => response.body);
   }
 
-  createCustomObject(customObjectDetails: CustomObjectCreateBodyDto) {
+  createCustomObject(
+    customObjectDetails: CustomObjectCreateBodyDto,
+  ): Promise<CustomObject> {
     const { container, key } = customObjectDetails;
 
     const customObjectDraft: CustomObjectDraft = {
@@ -73,7 +79,7 @@ export class ExtensionsService {
       .then((response) => response.body);
   }
 
-  createCustomType() {
+  createCustomType(): Promise<Type> {
     const typeDraft: TypeDraft = {
       key: CUSTOM_TYPE_KEY,
       name: {

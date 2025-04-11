@@ -2,6 +2,7 @@ import {
   ByProjectKeyRequestBuilder,
   CustomerDraft,
   CustomerSignin,
+  CustomerSignInResult,
 } from '@commercetools/platform-sdk';
 import { Inject, Injectable } from '@nestjs/common';
 import { CustomerRegisterDto } from 'src/dtos/customers.dto';
@@ -14,7 +15,9 @@ export class CustomersService {
     @Inject(API_ROOT) private readonly apiRoot: ByProjectKeyRequestBuilder,
   ) {}
 
-  async createCustomer(customerRegistrationDetails: CustomerRegisterDto) {
+  async createCustomer(
+    customerRegistrationDetails: CustomerRegisterDto,
+  ): Promise<CustomerSignInResult> {
     const {
       email,
       password,
@@ -63,7 +66,9 @@ export class CustomersService {
       .then((response) => response.body);
   }
 
-  authenticateCustomer(customerAuthenticationDetails: CustomerAuthenticateDto) {
+  authenticateCustomer(
+    customerAuthenticationDetails: CustomerAuthenticateDto,
+  ): Promise<CustomerSignInResult> {
     const { email, password, anonymousCartId, storeKey } =
       customerAuthenticationDetails;
 

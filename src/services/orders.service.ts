@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { OrderCreateDto } from 'src/dtos/orders.dto';
 import {
   ByProjectKeyRequestBuilder,
+  Order,
   OrderFromCartDraft,
   OrderSetShippingAddressCustomTypeAction,
   OrderUpdateAction,
@@ -20,7 +21,7 @@ export class OrdersService {
     private readonly customersService: CustomersService,
   ) {}
 
-  createOrder(orderDetails: OrderCreateDto) {
+  createOrder(orderDetails: OrderCreateDto): Promise<Order> {
     const { cartId, cartVersion, storeKey } = orderDetails;
 
     const orderFromCartDraft: OrderFromCartDraft = {
@@ -44,7 +45,7 @@ export class OrdersService {
 
   async updateShippingAddressCustomFields(
     customFieldsDetails: CustomFieldsUpdateDto,
-  ) {
+  ): Promise<Order> {
     const { orderNumber, instructions, time, storeKey } = customFieldsDetails;
 
     let order = await this.getOrderByNumber(orderNumber, storeKey);
@@ -80,7 +81,10 @@ export class OrdersService {
       .then((response) => response.body);
   }
 
-  private getOrderByNumber(orderNumber: string, storeKey: string) {
+  private getOrderByNumber(
+    orderNumber: string,
+    storeKey: string,
+  ): Promise<Order> {
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
       .orders()

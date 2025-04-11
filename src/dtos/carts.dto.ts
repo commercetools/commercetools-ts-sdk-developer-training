@@ -6,7 +6,6 @@ import {
   IsPositive,
   IsEmail,
   IsISO31661Alpha2,
-  IsLocale,
   IsISO4217CurrencyCode,
 } from 'class-validator';
 

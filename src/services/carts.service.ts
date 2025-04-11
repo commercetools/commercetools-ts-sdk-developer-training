@@ -1,5 +1,6 @@
 import {
   ByProjectKeyRequestBuilder,
+  Cart,
   CartAddDiscountCodeAction,
   CartAddLineItemAction,
   CartDraft,
@@ -26,7 +27,7 @@ export class CartsService {
     @Inject(API_ROOT) private readonly apiRoot: ByProjectKeyRequestBuilder,
   ) {}
 
-  async createCart(cartDetails: CartCreateDto) {
+  async createCart(cartDetails: CartCreateDto): Promise<Cart> {
     const { storeKey, sessionId, sku, quantity, currency, country } =
       cartDetails;
 
@@ -53,7 +54,7 @@ export class CartsService {
       .then((response) => response.body);
   }
 
-  async addLineItemsToCart(lineItemsDetails: LineItemsAddDto) {
+  async addLineItemsToCart(lineItemsDetails: LineItemsAddDto): Promise<Cart> {
     const { id, storeKey, sku, quantity, supplyChannel, distributionChannel } =
       lineItemsDetails;
 
@@ -96,7 +97,9 @@ export class CartsService {
       .then((response) => response.body);
   }
 
-  async applyDiscountCodeToCart(discountCodeDetails: DiscountCodeApplyDto) {
+  async applyDiscountCodeToCart(
+    discountCodeDetails: DiscountCodeApplyDto,
+  ): Promise<Cart> {
     const { id, storeKey, discountCode } = discountCodeDetails;
 
     const cart = await this.getCartById({ id, storeKey });
@@ -127,7 +130,7 @@ export class CartsService {
 
   async updateCartShippingAddress(
     shippingAddressDetails: ShippingAddressUpdateDto,
-  ) {
+  ): Promise<Cart> {
     const { id, storeKey, firstName, lastName, country, email } =
       shippingAddressDetails;
 
@@ -170,7 +173,7 @@ export class CartsService {
 
   async updateCartShippingMethod(
     shippingMethodDetails: ShippingMethodUpdateDto,
-  ) {
+  ): Promise<Cart> {
     const { id, storeKey, shippingMethodId } = shippingMethodDetails;
 
     const cart = await this.getCartById({ id, storeKey });
@@ -202,7 +205,7 @@ export class CartsService {
       .then((response) => response.body);
   }
 
-  public getCartById(params: CartGetParamsDto) {
+  public getCartById(params: CartGetParamsDto): Promise<Cart> {
     const { id, storeKey } = params;
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })

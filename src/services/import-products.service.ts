@@ -1,5 +1,7 @@
 import {
   ByProjectKeyRequestBuilder,
+  ImportResponse,
+  ImportSummary,
   ProductDraftImport,
 } from '@commercetools/importapi-sdk';
 import { Inject, Injectable } from '@nestjs/common';
@@ -16,7 +18,7 @@ export class ImportProductsService {
     private readonly importApiRoot: ByProjectKeyRequestBuilder,
   ) {}
 
-  async importProductData(csvString: string) {
+  async importProductData(csvString: string): Promise<ImportResponse> {
     const importContainerKey = participantNamePrefix + '-import-container';
     const productDrafts = await this.convertCsvToProductDrafts(csvString);
 
@@ -34,7 +36,7 @@ export class ImportProductsService {
       .then((response) => response.body);
   }
 
-  getImportSummary(importContainerKey: string) {
+  getImportSummary(importContainerKey: string): Promise<ImportSummary> {
     return this.importApiRoot
       .importContainers()
       .withImportContainerKeyValue({ importContainerKey })
