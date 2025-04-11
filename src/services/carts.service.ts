@@ -47,10 +47,10 @@ export class CartsService {
     const { id, storeKey, sku, quantity, supplyChannel, distributionChannel } =
       lineItemsDetails;
 
-    throw new NotImplementedException('This feature is not yet supported.');
+    const cart = await this.getCartById({ id, storeKey });
+    const cartVersion = cart.version;
 
-    // const cart = await this.getCartById({ id, storeKey });
-    // const cartVersion = cart.version;
+    throw new NotImplementedException('This feature is not yet supported.');
 
     // return this.apiRoot
     //   .inStoreKeyWithStoreKeyValue({ storeKey })
@@ -78,23 +78,25 @@ export class CartsService {
     const cart = await this.getCartById({ id, storeKey });
     const cartVersion = cart.version;
 
-    return this.apiRoot
-      .inStoreKeyWithStoreKeyValue({ storeKey })
-      .carts()
-      .withId({ ID: id })
-      .post({
-        body: {
-          version: cartVersion,
-          actions: [
-            {
-              action: 'addDiscountCode',
-              code: discountCode,
-            },
-          ],
-        },
-      })
-      .execute()
-      .then((response) => response.body);
+    throw new NotImplementedException('This feature is not yet supported.');
+
+    // return this.apiRoot
+    //   .inStoreKeyWithStoreKeyValue({ storeKey })
+    //   .carts()
+    //   .withId({ ID: id })
+    //   .post({
+    //     body: {
+    //       version: cartVersion,
+    //       actions: [
+    //         {
+    //           action: 'addDiscountCode',
+    //           code: discountCode,
+    //         },
+    //       ],
+    //     },
+    //   })
+    //   .execute()
+    //   .then((response) => response.body);
   }
 
   async updateCartShippingAddress(
@@ -106,32 +108,34 @@ export class CartsService {
     let cart = await this.getCartById({ id, storeKey });
     let cartVersion = cart.version;
 
-    cart = await this.apiRoot
-      .inStoreKeyWithStoreKeyValue({ storeKey })
-      .carts()
-      .withId({ ID: id })
-      .post({
-        body: {
-          version: cartVersion,
-          actions: [
-            {
-              action: 'setShippingAddress',
-              address: {
-                firstName,
-                lastName,
-                country,
-                email,
-              },
-            },
-            {
-              action: 'setCustomerEmail',
-              email,
-            },
-          ],
-        },
-      })
-      .execute()
-      .then((response) => response.body);
+    throw new NotImplementedException('This feature is not yet supported.');
+
+    // cart = await this.apiRoot
+    //   .inStoreKeyWithStoreKeyValue({ storeKey })
+    //   .carts()
+    //   .withId({ ID: id })
+    //   .post({
+    //     body: {
+    //       version: cartVersion,
+    //       actions: [
+    //         {
+    //           action: 'setShippingAddress',
+    //           address: {
+    //             firstName,
+    //             lastName,
+    //             country,
+    //             email,
+    //           },
+    //         },
+    //         {
+    //           action: 'setCustomerEmail',
+    //           email,
+    //         },
+    //       ],
+    //     },
+    //   })
+    //   .execute()
+    //   .then((response) => response.body);
 
     cartVersion = cart.version;
 

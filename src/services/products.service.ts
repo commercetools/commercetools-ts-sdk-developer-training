@@ -34,8 +34,6 @@ export class ProductsService {
     const { keyword, storeKey, facets, currency, country, locale } =
       searchDetails;
 
-    throw new NotImplementedException('This feature is not yet supported.');
-
     let query: _SearchQuery | undefined;
 
     // if (storeKey || keyword) {
@@ -78,13 +76,13 @@ export class ProductsService {
           mode: 'max',
         },
       ],
-      markMatchingVariants: true,
-      productProjectionParameters: {
-        priceCurrency: currency ?? 'EUR',
-        priceCountry: country ?? 'DE',
-        storeProjection: storeKey || undefined,
-        localeProjection: locale ? [locale!] : undefined,
-      },
+      // markMatchingVariants: true,
+      // productProjectionParameters: {
+      //   priceCurrency: currency ?? 'EUR',
+      //   priceCountry: country ?? 'DE',
+      //   storeProjection: storeKey || undefined,
+      //   localeProjection: locale ? [locale!] : undefined,
+      // },
     };
 
     return this.apiRoot
