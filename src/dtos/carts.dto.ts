@@ -145,3 +145,24 @@ export class ShippingAddressUpdateDto extends IntersectionType(
   ShippingAddressUpdateBodyDto,
   ShippingAddressUpdateParamsDto,
 ) {}
+
+export class ShippingMethodUpdateParamsDto {
+  @IsNotEmpty()
+  @IsString()
+  storeKey: string;
+
+  @IsNotEmpty()
+  @IsString()
+  id: string;
+}
+
+export class ShippingMethodUpdateBodyDto {
+  @IsNotEmpty()
+  @IsString()
+  shippingMethodId: string;
+}
+
+export class ShippingMethodUpdateDto extends IntersectionType(
+  ShippingMethodUpdateParamsDto,
+  ShippingMethodUpdateBodyDto,
+) {}

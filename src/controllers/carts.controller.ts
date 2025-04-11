@@ -10,6 +10,8 @@ import {
   LineItemsAddParamsDto,
   ShippingAddressUpdateBodyDto,
   ShippingAddressUpdateParamsDto,
+  ShippingMethodUpdateBodyDto,
+  ShippingMethodUpdateParamsDto,
 } from '../dtos/carts.dto';
 
 @Controller('api/in-store/:storeKey/carts')
@@ -62,6 +64,17 @@ export class CartsController {
     return this.cartsService.updateCartShippingAddress({
       ...shippingAddressParams,
       ...shippingAddressData,
+    });
+  }
+
+  @Post(':id/shipping-method')
+  updateShippingMethod(
+    @Param() shippingMethodParams: ShippingMethodUpdateParamsDto,
+    @Body() shippingMethodData: ShippingMethodUpdateBodyDto,
+  ) {
+    return this.cartsService.updateCartShippingMethod({
+      ...shippingMethodParams,
+      ...shippingMethodData,
     });
   }
 }

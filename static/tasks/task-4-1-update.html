@@ -63,7 +63,7 @@
                 <label for="code" class="form-label">Discount Code</label>
                 <input type="text" class="form-control mb-2 me-2" id="code" />
               </div>
-              <button class="btn btn-primary" onclick="updateCart()">
+              <button class="btn btn-primary" onclick="updateDiscountCode()">
                 Update Cart
               </button>
             </div>
@@ -225,6 +225,46 @@
             </div>
           </div>
         </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="task3">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapse3"
+              aria-expanded="false"
+              aria-controls="collapse3"
+            >
+              A customer wants to choose a shipping method.
+            </button>
+          </h2>
+          <div
+            id="collapse3"
+            class="accordion-collapse collapse"
+            aria-labelledby="task3"
+            data-bs-parent="#cartAccordion"
+          >
+            <div class="accordion-body">
+              <span
+                >GET shipping methods -
+                <code
+                  >GET /in-store/storeKey/shipping-methods/matching-cart</code
+                ></span
+              ><br /><br />
+              <button
+                class="btn btn-primary mb-3"
+                onclick="fetchShippingMethods()"
+              >
+                Fetch Shipping Methods
+              </button>
+              <div id="shippingMethodsContainer" class="mb-3"></div>
+
+              <button class="btn btn-success" onclick="setShippingMethod()">
+                Set Selected Shipping Method
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <br />
@@ -267,7 +307,7 @@
       jsonResponseDiv.textContent = 'No current active cart';
     }
   }
-  function updateCart() {
+  function updateDiscountCode() {
     let code = document.getElementById('code').value.trim();
 
     const jsonResponseDiv = document.getElementById('json-response');
@@ -329,6 +369,92 @@
         .then(handleResponse)
         .then((data) => {
           console.log('Success:', data);
+          jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          jsonResponseDiv.textContent = error.message;
+        });
+    } else {
+      jsonResponseDiv.textContent = 'No current active cart';
+    }
+  }
+
+  function fetchShippingMethods() {
+    const container = document.getElementById('shippingMethodsContainer');
+    container.innerHTML = '';
+    const jsonResponseDiv = document.getElementById('json-response');
+    jsonResponseDiv.textContent = '';
+
+    let cartId = localStorage.getItem('cartId');
+    let storeKey = localStorage.getItem('store');
+
+    if (storeKey && cartId) {
+      fetch(
+        `/api/shipping-methods/in-store/${storeKey}/matching-cart?cartId=${cartId}`,
+      )
+        .then(handleResponse)
+        .then((methods) => {
+          console.log('Shipping Methods:', methods);
+          jsonResponseDiv.textContent = JSON.stringify(methods, null, 2);
+
+          methods.results.forEach((method, index) => {
+            const div = document.createElement('div');
+            div.className = 'form-check';
+
+            const radio = document.createElement('input');
+            radio.className = 'form-check-input';
+            radio.type = 'radio';
+            radio.name = 'shippingMethod';
+            radio.id = `shippingMethod_${index}`;
+            radio.value = method.id;
+
+            const label = document.createElement('label');
+            label.className = 'form-check-label';
+            label.htmlFor = `shippingMethod_${index}`;
+            label.textContent = `${method.name}`;
+
+            div.appendChild(radio);
+            div.appendChild(label);
+            container.appendChild(div);
+          });
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          jsonResponseDiv.textContent = error.message;
+        });
+    } else {
+      jsonResponseDiv.textContent = 'No current active cart';
+    }
+  }
+
+  function setShippingMethod() {
+    const jsonResponseDiv = document.getElementById('json-response');
+    jsonResponseDiv.textContent = '';
+    let selected = document.querySelector(
+      'input[name="shippingMethod"]:checked',
+    );
+
+    if (!selected) {
+      jsonResponseDiv.textContent = 'Please select a shipping method';
+      return;
+    }
+
+    const shippingMethodId = selected.value;
+    let cartId = localStorage.getItem('cartId');
+    let storeKey = localStorage.getItem('store');
+
+    if (storeKey && cartId) {
+      fetch(`/api/in-store/${storeKey}/carts/${cartId}/shipping-method`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ shippingMethodId }),
+      })
+        .then(handleResponse)
+        .then((data) => {
+          console.log('Shipping method set:', data);
           jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
         })
         .catch((error) => {

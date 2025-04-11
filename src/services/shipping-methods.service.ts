@@ -73,4 +73,18 @@ export class ShippingMethodsService {
         throw error;
       });
   }
+
+  getMatchingShippingMethods(storeKey: string, cartId: string) {
+    return this.apiRoot
+      .inStoreKeyWithStoreKeyValue({ storeKey })
+      .shippingMethods()
+      .matchingCart()
+      .get({
+        queryArgs: {
+          cartId,
+        },
+      })
+      .execute()
+      .then((response) => response.body);
+  }
 }

@@ -26,4 +26,15 @@ export class ShippingMethodsController {
   checkShippingMethodExistence(@Param('key') key: string) {
     return this.shippingMethodsService.checkShippingMethodExists(key);
   }
+
+  @Get('/in-store/:storeKey/matching-cart')
+  getMatchingShippingMethodsForStore(
+    @Param('storeKey') storeKey: string,
+    @Query('cartId') cartId: string,
+  ) {
+    return this.shippingMethodsService.getMatchingShippingMethods(
+      storeKey,
+      cartId,
+    );
+  }
 }

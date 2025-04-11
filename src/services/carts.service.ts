@@ -6,6 +6,7 @@ import {
   LineItemsAddDto,
   DiscountCodeApplyDto,
   ShippingAddressUpdateDto,
+  ShippingMethodUpdateDto,
 } from '../dtos/carts.dto';
 
 import { API_ROOT } from 'src/commercetools/api-client.module';
@@ -114,7 +115,7 @@ export class CartsService {
     let cart = await this.getCartById({ id, storeKey });
     let cartVersion = cart.version;
 
-    cart = await this.apiRoot
+    return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
       .carts()
       .withId({ ID: id })
@@ -140,15 +141,17 @@ export class CartsService {
       })
       .execute()
       .then((response) => response.body);
+  }
 
-    cartVersion = cart.version;
+  async updateCartShippingMethod(
+    shippingMethodDetails: ShippingMethodUpdateDto,
+  ) {
+    const { id, storeKey, shippingMethodId } = shippingMethodDetails;
 
-    const matchingShippingMethod = await this.fetchMatchingShippingMethod(
-      id,
-      storeKey,
-    );
+    const cart = await this.getCartById({ id, storeKey });
+    const cartVersion = cart.version;
 
-    cart = await this.apiRoot
+    return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
       .carts()
       .withId({ ID: id })
@@ -160,7 +163,7 @@ export class CartsService {
               action: 'setShippingMethod',
               shippingMethod: {
                 typeId: 'shipping-method',
-                id: matchingShippingMethod.id,
+                id: shippingMethodId,
               },
             },
           ],
@@ -168,22 +171,6 @@ export class CartsService {
       })
       .execute()
       .then((response) => response.body);
-
-    return cart;
-  }
-
-  private fetchMatchingShippingMethod(cartId: string, storeKey: string) {
-    return this.apiRoot
-      .inStoreKeyWithStoreKeyValue({ storeKey })
-      .shippingMethods()
-      .matchingCart()
-      .get({
-        queryArgs: {
-          cartId,
-        },
-      })
-      .execute()
-      .then((response) => response.body.results[0]);
   }
 
   public getCartById(params: CartGetParamsDto) {
