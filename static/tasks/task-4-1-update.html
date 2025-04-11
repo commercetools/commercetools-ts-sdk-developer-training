@@ -80,8 +80,7 @@
               aria-controls="collapse2"
               id="shipping-accordion-button"
             >
-              A customer wants to update the shipping address and choose a
-              shipping method.
+              A customer wants to update the shipping address.
             </button>
           </h2>
           <div
@@ -246,20 +245,21 @@
           >
             <div class="accordion-body">
               <span
-                >GET shipping methods -
+                >GET SHIPPING METHODS -
                 <code
                   >GET /in-store/storeKey/shipping-methods/matching-cart</code
-                ></span
+                >
+              </span>
+              <br /><br />
+              <span
+                >UPDATE CART -
+                <code
+                  >POST /in-store/storeKey/carts/{cartId}/shipping-methods</code
+                > </span
               ><br /><br />
-              <button
-                class="btn btn-primary mb-3"
-                onclick="fetchShippingMethods()"
-              >
-                Fetch Shipping Methods
-              </button>
               <div id="shippingMethodsContainer" class="mb-3"></div>
 
-              <button class="btn btn-success" onclick="setShippingMethod()">
+              <button class="btn btn-primary" onclick="setShippingMethod()">
                 Set Selected Shipping Method
               </button>
             </div>
@@ -285,6 +285,18 @@
 </div>
 
 <script>
+  let shippingMethodsFetched = false;
+
+  const shippingAccordion = document.getElementById('collapse3');
+
+  shippingAccordion.addEventListener('shown.bs.collapse', () => {
+    if (!shippingMethodsFetched) {
+      console.log('sevtap');
+      fetchShippingMethods();
+      shippingMethodsFetched = true;
+    }
+  });
+
   function getCart() {
     const jsonResponseDiv = document.getElementById('json-response');
     jsonResponseDiv.textContent = '';
@@ -386,8 +398,8 @@
     const jsonResponseDiv = document.getElementById('json-response');
     jsonResponseDiv.textContent = '';
 
-    let cartId = localStorage.getItem('cartId');
-    let storeKey = localStorage.getItem('store');
+    const cartId = localStorage.getItem('cartId');
+    const storeKey = localStorage.getItem('store');
 
     if (storeKey && cartId) {
       fetch(
@@ -406,13 +418,13 @@
             radio.className = 'form-check-input';
             radio.type = 'radio';
             radio.name = 'shippingMethod';
-            radio.id = `shippingMethod_${index}`;
+            radio.id = `shippingMethod${index}`;
             radio.value = method.id;
 
             const label = document.createElement('label');
             label.className = 'form-check-label';
-            label.htmlFor = `shippingMethod_${index}`;
-            label.textContent = `${method.name}`;
+            label.htmlFor = radio.id;
+            label.textContent = method.name || 'Unnamed shipping method';
 
             div.appendChild(radio);
             div.appendChild(label);
@@ -429,20 +441,20 @@
   }
 
   function setShippingMethod() {
-    const jsonResponseDiv = document.getElementById('json-response');
-    jsonResponseDiv.textContent = '';
-    let selected = document.querySelector(
+    const selected = document.querySelector(
       'input[name="shippingMethod"]:checked',
     );
+    const container = document.getElementById('json-response');
+    container.textContent = '';
 
     if (!selected) {
-      jsonResponseDiv.textContent = 'Please select a shipping method';
+      container.textContent = 'Please select a shipping method first.';
       return;
     }
 
     const shippingMethodId = selected.value;
-    let cartId = localStorage.getItem('cartId');
-    let storeKey = localStorage.getItem('store');
+    const cartId = localStorage.getItem('cartId');
+    const storeKey = localStorage.getItem('store');
 
     if (storeKey && cartId) {
       fetch(`/api/in-store/${storeKey}/carts/${cartId}/shipping-method`, {
@@ -454,15 +466,15 @@
       })
         .then(handleResponse)
         .then((data) => {
-          console.log('Shipping method set:', data);
-          jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+          console.log('Set shipping method:', data);
+          container.textContent = JSON.stringify(data, null, 2);
         })
         .catch((error) => {
           console.error('Error:', error);
-          jsonResponseDiv.textContent = error.message;
+          container.textContent = error.message;
         });
     } else {
-      jsonResponseDiv.textContent = 'No current active cart';
+      container.textContent = 'No current active cart';
     }
   }
 </script>
