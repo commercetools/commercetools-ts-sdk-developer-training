@@ -193,15 +193,17 @@
                       <label for="country" class="form-label">Country</label>
                     </div>
                     <div class="col-md-8 mb-2">
-                      <input
-                        type="text"
-                        class="form-control"
+                      <select
+                        class="form-select"
                         id="country"
                         name="country"
                         required
-                      />
+                      >
+                        <option value="">Loading countries...</option>
+                      </select>
                     </div>
                   </div>
+
                   <div class="d-flex flex-row">
                     <div class="col-md-4 mb-2">
                       <label for="email" class="form-label">Email</label>
@@ -285,17 +287,46 @@
 </div>
 
 <script>
+  let countriesFetched = false;
+  // Observe when the shipping address accordion becomes visible
+  const shippingAddressAccordion = document.getElementById('collapse2');
+
+  const shippingAddressObserver = new IntersectionObserver(
+    (entries) => {
+      const entry = entries[0];
+      if (entry.isIntersecting && !countriesFetched) {
+        // fetchCountries();
+        fetchAndPopulateCountries('country');
+        countriesFetched = true;
+      }
+    },
+    {
+      root: null, // viewport
+      threshold: 0.1, // trigger when 10% of the section is visible
+    },
+  );
+
+  shippingAddressObserver.observe(shippingAddressAccordion);
+
   let shippingMethodsFetched = false;
+  // Observe when the shipping method accordion becomes visible
+  const shippingMethodAccordion = document.getElementById('collapse3');
 
-  const shippingAccordion = document.getElementById('collapse3');
+  const shippingMethodObserver = new IntersectionObserver(
+    (entries) => {
+      const entry = entries[0];
+      if (entry.isIntersecting && !shippingMethodsFetched) {
+        fetchShippingMethods();
+        shippingMethodsFetched = true;
+      }
+    },
+    {
+      root: null,
+      threshold: 0.1,
+    },
+  );
 
-  shippingAccordion.addEventListener('shown.bs.collapse', () => {
-    if (!shippingMethodsFetched) {
-      console.log('sevtap');
-      fetchShippingMethods();
-      shippingMethodsFetched = true;
-    }
-  });
+  shippingMethodObserver.observe(shippingMethodAccordion);
 
   function getCart() {
     const jsonResponseDiv = document.getElementById('json-response');
@@ -420,6 +451,8 @@
             radio.name = 'shippingMethod';
             radio.id = `shippingMethod${index}`;
             radio.value = method.id;
+            // ✅ Select the first shipping method by default
+            if (index === 0) radio.checked = true;
 
             const label = document.createElement('label');
             label.className = 'form-check-label';

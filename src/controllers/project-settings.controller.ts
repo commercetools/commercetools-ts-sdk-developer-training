@@ -11,4 +11,9 @@ export class ProjectSettingsController {
   getAllCurrencies() {
     return this.projectSettingsService.getCurrencies();
   }
+
+  @Get('countries')
+  getAllCountries() {
+    return this.projectSettingsService.getCountries();
+  }
 }

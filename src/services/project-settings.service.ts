@@ -13,4 +13,10 @@ export class ProjectSettingsService {
       .execute()
       .then((response) => response.body.currencies);
   }
+  getCountries(): Promise<Array<string>> {
+    return this.apiRoot
+      .get()
+      .execute()
+      .then((response) => response.body.countries);
+  }
 }

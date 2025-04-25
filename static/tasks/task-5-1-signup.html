@@ -150,13 +150,14 @@
                     <label for="country" class="form-label">Country</label>
                   </div>
                   <div class="col-md-8 mb-2">
-                    <input
-                      type="text"
-                      class="form-control"
+                    <select
+                      class="form-select"
                       id="country"
                       name="country"
                       required
-                    />
+                    >
+                      <option value="">Loading countries...</option>
+                    </select>
                   </div>
                 </div>
                 <div class="form-check mt-3">
@@ -224,6 +225,27 @@
 </div>
 
 <script>
+  let countriesFetched = false;
+  // Observe when the shipping accordion becomes visible
+  const customerSignUpAccordion = document.getElementById('collapse1');
+
+  const customerAddressObserver = new IntersectionObserver(
+    (entries) => {
+      const entry = entries[0];
+      if (entry.isIntersecting && !countriesFetched) {
+        // fetchCountries();
+        fetchAndPopulateCountries('country');
+        countriesFetched = true;
+      }
+    },
+    {
+      root: null, // viewport
+      threshold: 0.1, // trigger when 10% of the section is visible
+    },
+  );
+
+  customerAddressObserver.observe(customerSignUpAccordion);
+
   function displayAnonymousCart(event) {
     let cartId = localStorage.getItem('cartId');
 
