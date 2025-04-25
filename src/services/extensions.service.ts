@@ -6,14 +6,13 @@ import {
   TypeDraft,
 } from '@commercetools/platform-sdk';
 import { Inject, Injectable } from '@nestjs/common';
-import { API_ROOT } from 'src/commercetools/api-client.module';
-import { CustomObjectCreateBodyDto } from 'src/dtos/extensions.dto';
-import {
-  CustomObjectUpdateDto,
-  CustomObjectUpdateParamsDto,
-} from 'src/dtos/extensions.dto';
+import { API_ROOT } from '../commercetools/api-client.module';
+import { CustomObjectCreateUpdateBodyDto } from '../dtos/extensions.dto';
+import { isSDKError } from '../types/error.type';
 
 export const CUSTOM_TYPE_KEY = 'tt-delivery-instructions';
+export const CUSTOM_OBJECT_CONTAINER = 'email-lists';
+export const CUSTOM_OBJECT_KEY = 'promotional-email-subscribers';
 
 @Injectable()
 export class ExtensionsService {
@@ -21,60 +20,46 @@ export class ExtensionsService {
     @Inject(API_ROOT) private readonly apiRoot: ByProjectKeyRequestBuilder,
   ) {}
 
-  getCustomObject(
-    customObjectDetails: CustomObjectUpdateParamsDto,
-  ): Promise<CustomObject> {
-    const { container, key } = customObjectDetails;
+  getCustomObject(): Promise<CustomObject> {
     return this.apiRoot
       .customObjects()
-      .withContainerAndKey({ container, key })
+      .withContainerAndKey({
+        container: CUSTOM_OBJECT_CONTAINER,
+        key: CUSTOM_OBJECT_KEY,
+      })
       .get()
       .execute()
       .then((response) => response.body);
   }
 
-  async updateCustomObject(customObjectDetails: CustomObjectUpdateDto) {
-    const { container, key, userName, email } = customObjectDetails;
+  async createUpdateCustomObject(
+    customObjectDetails: CustomObjectCreateUpdateBodyDto,
+  ) {
+    const { userName, email } = customObjectDetails;
 
-    const customObject = await this.getCustomObject({ container, key });
+    let subscribers: any = [];
 
-    const subscribers = customObject.value;
-    subscribers.push({
-      userName,
-      email,
-    });
+    try {
+      const customObject = await this.getCustomObject();
+      subscribers = customObject.value;
+      subscribers.push({ userName, email });
+    } catch (error: unknown) {
+      if (isSDKError(error) && error.statusCode === 404) {
+        subscribers = [{ userName, email }];
+      } else {
+        throw error; // Let non-404 errors bubble up
+      }
+    }
 
     const customObjectDraft: CustomObjectDraft = {
-      container,
-      key,
+      container: CUSTOM_OBJECT_CONTAINER,
+      key: CUSTOM_OBJECT_KEY,
       value: subscribers,
     };
 
     return this.apiRoot
       .customObjects()
-      .post({
-        body: customObjectDraft,
-      })
-      .execute()
-      .then((response) => response.body);
-  }
-
-  createCustomObject(
-    customObjectDetails: CustomObjectCreateBodyDto,
-  ): Promise<CustomObject> {
-    const { container, key } = customObjectDetails;
-
-    const customObjectDraft: CustomObjectDraft = {
-      container,
-      key,
-      value: [],
-    };
-
-    return this.apiRoot
-      .customObjects()
-      .post({
-        body: customObjectDraft,
-      })
+      .post({ body: customObjectDraft })
       .execute()
       .then((response) => response.body);
   }
