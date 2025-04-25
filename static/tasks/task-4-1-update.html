@@ -198,9 +198,7 @@
                         id="country"
                         name="country"
                         required
-                      >
-                        <option value="">Loading countries...</option>
-                      </select>
+                      ></select>
                     </div>
                   </div>
 
@@ -287,46 +285,81 @@
 </div>
 
 <script>
-  let countriesFetched = false;
-  // Observe when the shipping address accordion becomes visible
-  const shippingAddressAccordion = document.getElementById('collapse2');
+  // Listen for when the shipping address accordion is shown
+  document
+    .getElementById('collapse2')
+    .addEventListener('shown.bs.collapse', populateCountries);
 
-  const shippingAddressObserver = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0];
-      if (entry.isIntersecting && !countriesFetched) {
-        // fetchCountries();
-        fetchAndPopulateCountries('country');
-        countriesFetched = true;
-      }
-    },
-    {
-      root: null, // viewport
-      threshold: 0.1, // trigger when 10% of the section is visible
-    },
-  );
+  function populateCountries() {
+    const countriesList = localStorage.getItem('countriesList');
+    const select = document.getElementById('country');
 
-  shippingAddressObserver.observe(shippingAddressAccordion);
+    if (countriesList) {
+      const countries = JSON.parse(countriesList);
+      countries.forEach((countryCode, index) => {
+        const option = document.createElement('option');
+        option.value = countryCode;
+        option.textContent = countryCode;
+        if (index === 0) option.selected = true; // Explicitly set first one
+        select.appendChild(option);
+      });
+    }
+  }
 
-  let shippingMethodsFetched = false;
-  // Observe when the shipping method accordion becomes visible
-  const shippingMethodAccordion = document.getElementById('collapse3');
+  // Listen for when the shipping methods accordion is shown
+  document
+    .getElementById('collapse3')
+    .addEventListener('shown.bs.collapse', fetchShippingMethods);
 
-  const shippingMethodObserver = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0];
-      if (entry.isIntersecting && !shippingMethodsFetched) {
-        fetchShippingMethods();
-        shippingMethodsFetched = true;
-      }
-    },
-    {
-      root: null,
-      threshold: 0.1,
-    },
-  );
+  function fetchShippingMethods() {
+    const container = document.getElementById('shippingMethodsContainer');
+    container.innerHTML = '';
+    const jsonResponseDiv = document.getElementById('json-response');
+    jsonResponseDiv.textContent = '';
 
-  shippingMethodObserver.observe(shippingMethodAccordion);
+    const cartId = localStorage.getItem('cartId');
+    const storeKey = localStorage.getItem('store');
+
+    if (storeKey && cartId) {
+      fetch(
+        `/api/shipping-methods/in-store/${storeKey}/matching-cart?cartId=${cartId}`,
+      )
+        .then(handleResponse)
+        .then((methods) => {
+          console.log('Shipping Methods:', methods);
+          jsonResponseDiv.textContent = JSON.stringify(methods, null, 2);
+
+          methods.results.forEach((method, index) => {
+            const div = document.createElement('div');
+            div.className = 'form-check';
+
+            const radio = document.createElement('input');
+            radio.className = 'form-check-input';
+            radio.type = 'radio';
+            radio.name = 'shippingMethod';
+            radio.id = `shippingMethod${index}`;
+            radio.value = method.id;
+            // ✅ Select the first shipping method by default
+            if (index === 0) radio.checked = true;
+
+            const label = document.createElement('label');
+            label.className = 'form-check-label';
+            label.htmlFor = radio.id;
+            label.textContent = method.name || 'Unnamed shipping method';
+
+            div.appendChild(radio);
+            div.appendChild(label);
+            container.appendChild(div);
+          });
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          jsonResponseDiv.textContent = error.message;
+        });
+    } else {
+      jsonResponseDiv.textContent = 'No current active cart';
+    }
+  }
 
   function getCart() {
     const jsonResponseDiv = document.getElementById('json-response');
@@ -413,56 +446,6 @@
         .then((data) => {
           console.log('Success:', data);
           jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-          jsonResponseDiv.textContent = error.message;
-        });
-    } else {
-      jsonResponseDiv.textContent = 'No current active cart';
-    }
-  }
-
-  function fetchShippingMethods() {
-    const container = document.getElementById('shippingMethodsContainer');
-    container.innerHTML = '';
-    const jsonResponseDiv = document.getElementById('json-response');
-    jsonResponseDiv.textContent = '';
-
-    const cartId = localStorage.getItem('cartId');
-    const storeKey = localStorage.getItem('store');
-
-    if (storeKey && cartId) {
-      fetch(
-        `/api/shipping-methods/in-store/${storeKey}/matching-cart?cartId=${cartId}`,
-      )
-        .then(handleResponse)
-        .then((methods) => {
-          console.log('Shipping Methods:', methods);
-          jsonResponseDiv.textContent = JSON.stringify(methods, null, 2);
-
-          methods.results.forEach((method, index) => {
-            const div = document.createElement('div');
-            div.className = 'form-check';
-
-            const radio = document.createElement('input');
-            radio.className = 'form-check-input';
-            radio.type = 'radio';
-            radio.name = 'shippingMethod';
-            radio.id = `shippingMethod${index}`;
-            radio.value = method.id;
-            // ✅ Select the first shipping method by default
-            if (index === 0) radio.checked = true;
-
-            const label = document.createElement('label');
-            label.className = 'form-check-label';
-            label.htmlFor = radio.id;
-            label.textContent = method.name || 'Unnamed shipping method';
-
-            div.appendChild(radio);
-            div.appendChild(label);
-            container.appendChild(div);
-          });
         })
         .catch((error) => {
           console.error('Error:', error);

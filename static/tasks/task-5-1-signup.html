@@ -155,9 +155,7 @@
                       id="country"
                       name="country"
                       required
-                    >
-                      <option value="">Loading countries...</option>
-                    </select>
+                    ></select>
                   </div>
                 </div>
                 <div class="form-check mt-3">
@@ -225,26 +223,23 @@
 </div>
 
 <script>
-  let countriesFetched = false;
-  // Observe when the shipping accordion becomes visible
-  const customerSignUpAccordion = document.getElementById('collapse1');
+  setTimeout(populateCountries, 0);
 
-  const customerAddressObserver = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0];
-      if (entry.isIntersecting && !countriesFetched) {
-        // fetchCountries();
-        fetchAndPopulateCountries('country');
-        countriesFetched = true;
-      }
-    },
-    {
-      root: null, // viewport
-      threshold: 0.1, // trigger when 10% of the section is visible
-    },
-  );
+  function populateCountries() {
+    const countriesList = localStorage.getItem('countriesList');
+    const select = document.getElementById('country');
 
-  customerAddressObserver.observe(customerSignUpAccordion);
+    if (countriesList) {
+      const countries = JSON.parse(countriesList);
+      countries.forEach((countryCode, index) => {
+        const option = document.createElement('option');
+        option.value = countryCode;
+        option.textContent = countryCode;
+        if (index === 0) option.selected = true; // Explicitly set first one
+        select.appendChild(option);
+      });
+    }
+  }
 
   function displayAnonymousCart(event) {
     let cartId = localStorage.getItem('cartId');

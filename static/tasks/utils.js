@@ -15,26 +15,20 @@ function handleResponse(response) {
   return response.json();
 }
 
-async function fetchAndPopulateCountries(selectElementId) {
-  try {
-    const res = await fetch('/api/project-settings/countries');
-    const countries = await res.json();
-    console.log('Available countries:', countries);
-
-    const select = document.getElementById(selectElementId);
-    if (!select) {
-      console.warn(`No <select> element found with ID "${selectElementId}"`);
-      return;
-    }
-
-    select.innerHTML = ''; // Clear existing options
-    countries.sort().forEach((countryCode) => {
-      const option = document.createElement('option');
-      option.value = countryCode;
-      option.textContent = countryCode;
-      select.appendChild(option);
+function getCountries() {
+  const url = '/api/project-settings/countries';
+  fetch(url)
+    .then(handleResponse)
+    .then((countries) => {
+      countries = countries.sort();
+      console.log('Available countries:', countries);
+      if (countries && countries.length > 0) {
+        localStorage.setItem('countriesList', JSON.stringify(countries));
+      } else {
+        localStorage.removeItem('countriesList');
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
     });
-  } catch (error) {
-    console.error('Failed to fetch countries:', error);
-  }
 }
