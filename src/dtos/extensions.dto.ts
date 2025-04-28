@@ -1,5 +1,5 @@
 import { IntersectionType } from '@nestjs/mapped-types';
-import { IsString, IsNotEmpty, IsEmail } from 'class-validator';
+import { IsString, IsNotEmpty, IsEmail, IsOptional } from 'class-validator';
 
 export class CustomFieldsUpdateBodyDto {
   @IsString()
@@ -26,7 +26,7 @@ export class CustomFieldsUpdateDto extends IntersectionType(
   CustomFieldsUpdateParamsDto,
 ) {}
 
-export class CustomObjectUpdateBodyDto {
+export class CustomObjectCreateUpdateBodyDto {
   @IsString()
   @IsNotEmpty()
   userName: string;
@@ -35,29 +35,4 @@ export class CustomObjectUpdateBodyDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
-}
-
-export class CustomObjectUpdateParamsDto {
-  @IsString()
-  @IsNotEmpty()
-  container: string;
-
-  @IsString()
-  @IsNotEmpty()
-  key: string;
-}
-
-export class CustomObjectUpdateDto extends IntersectionType(
-  CustomObjectUpdateBodyDto,
-  CustomObjectUpdateParamsDto,
-) {}
-
-export class CustomObjectCreateBodyDto {
-  @IsString()
-  @IsNotEmpty()
-  container: string;
-
-  @IsString()
-  @IsNotEmpty()
-  key: string;
 }

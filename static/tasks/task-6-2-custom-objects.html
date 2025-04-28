@@ -26,7 +26,7 @@
           >
             <div class="accordion-body">
               <span
-                >UPDATE CUSTOMOBJECTS -
+                >CREATE/UPDATE CUSTOMOBJECTS -
                 <code>POST /extentions/custom-objects</code></span
               ><br /><br />
               <div class="mb-3">
@@ -48,7 +48,10 @@
                 />
               </div>
 
-              <button class="btn btn-primary" onclick="subscribe()">
+              <button
+                class="btn btn-primary"
+                onclick="createUpdateSubscribers()"
+              >
                 Subscribe
               </button>
             </div>
@@ -63,7 +66,7 @@
                 aria-expanded="false"
                 aria-controls="collapse2"
               >
-                Create/Get Custom Object.
+                Get Custom Object.
               </button>
             </h2>
             <div
@@ -74,18 +77,9 @@
             >
               <div class="accordion-body">
                 <span
-                  >CREATE CUSTOM OBJECT -
-                  <code>POST /extensions/custom-objects</code></span
-                ><br /><br />
-                <span
                   >GET CUSTOM OBJECT -
-                  <code
-                    >GET /extensions/custom-objects/container/key</code
-                  ></span
+                  <code>GET /extensions/custom-objects</code></span
                 ><br /><br />
-                <button class="btn btn-primary" onclick="createCustomObject()">
-                  Create Custom Object
-                </button>
                 <button class="btn btn-primary" onclick="getCustomObject()">
                   Get Subscribers
                 </button>
@@ -113,44 +107,14 @@
 </div>
 
 <script>
-  let container = 'email-lists';
-  let key = 'promotional-email-subscribers';
-
-  function createCustomObject() {
-    const results = document.getElementById('results');
-    results.textContent = '';
-
-    let url = '/api/extensions/custom-objects';
-
-    const formData = {};
-    formData.container = container;
-    formData.key = key;
-
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    })
-      .then(handleResponse)
-      .then((data) => {
-        console.log('Success:', data);
-        results.textContent = 'Custom Object created successfully.';
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        results.textContent = error.message;
-      });
-  }
-  function subscribe() {
+  function createUpdateSubscribers() {
     let email = document.getElementById('email').value.trim();
     let user = document.getElementById('user').value.trim();
     const results = document.getElementById('results');
 
     results.textContent = '';
 
-    let url = `/api/extensions/custom-objects/${container}/${key}`;
+    let url = `/api/extensions/custom-objects`;
 
     var formData = {};
 
@@ -176,11 +140,12 @@
         });
     } else results.textContent = 'enter your name and email.';
   }
+
   function getCustomObject() {
     const results = document.getElementById('results');
     results.textContent = '';
 
-    const url = `/api/extensions/custom-objects/${container}/${key}`;
+    const url = `/api/extensions/custom-objects`;
 
     fetch(url)
       .then(handleResponse)
