@@ -3,7 +3,111 @@
     <div class="col-md-9">
       <h2>Custom Fields</h2>
       <div class="accordion" id="typeAccordion">
-        <div class="accordion-item">
+        <div class="accordion" id="typeAccordion">
+          <div class="accordion" id="typeAccordion">
+            <!-- Top accordion - open by default -->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="task2">
+                <button
+                  class="accordion-button"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapse2"
+                  aria-expanded="true"
+                  aria-controls="collapse2"
+                >
+                  Create Custom Type.
+                </button>
+              </h2>
+              <div
+                id="collapse2"
+                class="accordion-collapse collapse show"
+                aria-labelledby="task2"
+                data-bs-parent="#typeAccordion"
+              >
+                <div class="accordion-body">
+                  <span>CREATE TYPE - <code>POST /types</code></span
+                  ><br /><br />
+                  <button class="btn btn-primary" onclick="createType()">
+                    Create Type
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom accordion - closed by default -->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="task1">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapse1"
+                  aria-expanded="false"
+                  aria-controls="collapse1"
+                >
+                  A customer should have the option to add custom delivery
+                  instructions to the order.
+                </button>
+              </h2>
+              <div
+                id="collapse1"
+                class="accordion-collapse collapse"
+                aria-labelledby="task1"
+                data-bs-parent="#typeAccordion"
+              >
+                <div class="accordion-body">
+                  <span>UPDATE ORDER - <code>POST /orders/id</code></span
+                  ><br /><br />
+                  <div class="mb-3">
+                    <label for="order-number" class="form-label"
+                      >Order Number(read only)</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control mb-2 me-2"
+                      id="order-number"
+                      placeholder="Order Number"
+                      readonly
+                    />
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="time" class="form-label"
+                      >Preferred Delivery Time</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control mb-2 me-2"
+                      id="time"
+                      placeholder="No Preference"
+                    />
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="instructions" class="form-label"
+                      >Instructions</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control mb-2 me-2"
+                      id="instructions"
+                      placeholder="Instructions"
+                    />
+                  </div>
+
+                  <button
+                    class="btn btn-primary"
+                    onclick="addDeliveryInstructions()"
+                  >
+                    Update Order
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- <div class="accordion-item">
           <h2 class="accordion-header" id="task1">
             <button
               class="accordion-button"
@@ -101,84 +205,90 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
-    <br /><br />
-    <main class="d-flex flex-nowrap">
-      <div class="row h-100">
-        <div class="d-flex col-md-12">
-          <div class="container col-md-12">
-            <pre
-              id="json-response"
-              class="mt-1 flex-fill d-flex overflow-auto"
-            ></pre>
-          </div>
+          <br /><br />
+          <main class="d-flex flex-nowrap">
+            <div class="row h-100">
+              <div class="d-flex col-md-12">
+                <div class="container col-md-12">
+                  <pre
+                    id="json-response"
+                    class="mt-1 flex-fill d-flex overflow-auto"
+                  ></pre>
+                </div>
+              </div>
+            </div>
+          </main>
         </div>
       </div>
-    </main>
+
+      <script>
+        function displayOrderNumber(event) {
+          let orderNumber = localStorage.getItem('orderNumber');
+
+          if (orderNumber) event.target.value = orderNumber;
+          else event.target.value = 'No order number in local cache';
+        }
+
+        if (typeof orderNumberInput === 'undefined') {
+          let orderNumberInput = document.getElementById('order-number');
+          orderNumberInput.addEventListener('focus', displayOrderNumber);
+        }
+        function addDeliveryInstructions() {
+          const jsonResponseDiv = document.getElementById('json-response');
+          jsonResponseDiv.textContent = '';
+
+          const storeKey = localStorage.getItem('store');
+          const orderNumber = localStorage.getItem('orderNumber');
+
+          let formData = {
+            time: document.getElementById('time').value,
+            instructions: document.getElementById('instructions').value,
+          };
+
+          fetch(
+            `/api/in-store/${storeKey}/orders/${orderNumber}/custom-fields`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(formData),
+            },
+          )
+            .then(handleResponse)
+            .then((data) => {
+              console.log('Success:', data);
+              jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+              jsonResponseDiv.textContent = error.message;
+            });
+        }
+
+        function createType() {
+          const jsonResponseDiv = document.getElementById('json-response');
+          jsonResponseDiv.textContent = '';
+
+          fetch('/api/extensions/types', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+            .then(handleResponse)
+            .then((data) => {
+              console.log('Success:', data);
+              jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+              jsonResponseDiv.textContent = error.message;
+            });
+        }
+      </script>
+    </div>
   </div>
 </div>
-
-<script>
-  function displayOrderNumber(event) {
-    let orderNumber = localStorage.getItem('orderNumber');
-
-    if (orderNumber) event.target.value = orderNumber;
-    else event.target.value = 'No order number in local cache';
-  }
-
-  if (typeof orderNumberInput === 'undefined') {
-    let orderNumberInput = document.getElementById('order-number');
-    orderNumberInput.addEventListener('focus', displayOrderNumber);
-  }
-  function addDeliveryInstructions() {
-    const jsonResponseDiv = document.getElementById('json-response');
-    jsonResponseDiv.textContent = '';
-
-    const storeKey = localStorage.getItem('store');
-    const orderNumber = localStorage.getItem('orderNumber');
-
-    let formData = {
-      time: document.getElementById('time').value,
-      instructions: document.getElementById('instructions').value,
-    };
-
-    fetch(`/api/in-store/${storeKey}/orders/${orderNumber}/custom-fields`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    })
-      .then(handleResponse)
-      .then((data) => {
-        console.log('Success:', data);
-        jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        jsonResponseDiv.textContent = error.message;
-      });
-  }
-
-  function createType() {
-    const jsonResponseDiv = document.getElementById('json-response');
-    jsonResponseDiv.textContent = '';
-
-    fetch('/api/extensions/types', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(handleResponse)
-      .then((data) => {
-        console.log('Success:', data);
-        jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        jsonResponseDiv.textContent = error.message;
-      });
-  }
-</script>
