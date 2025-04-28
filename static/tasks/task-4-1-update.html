@@ -193,15 +193,15 @@
                       <label for="country" class="form-label">Country</label>
                     </div>
                     <div class="col-md-8 mb-2">
-                      <input
-                        type="text"
-                        class="form-control"
+                      <select
+                        class="form-select"
                         id="country"
                         name="country"
                         required
-                      />
+                      ></select>
                     </div>
                   </div>
+
                   <div class="d-flex flex-row">
                     <div class="col-md-4 mb-2">
                       <label for="email" class="form-label">Email</label>
@@ -285,17 +285,81 @@
 </div>
 
 <script>
-  let shippingMethodsFetched = false;
+  // Listen for when the shipping address accordion is shown
+  document
+    .getElementById('collapse2')
+    .addEventListener('shown.bs.collapse', populateCountries);
 
-  const shippingAccordion = document.getElementById('collapse3');
+  function populateCountries() {
+    const countriesList = localStorage.getItem('countriesList');
+    const select = document.getElementById('country');
 
-  shippingAccordion.addEventListener('shown.bs.collapse', () => {
-    if (!shippingMethodsFetched) {
-      console.log('sevtap');
-      fetchShippingMethods();
-      shippingMethodsFetched = true;
+    if (countriesList) {
+      const countries = JSON.parse(countriesList);
+      countries.forEach((countryCode, index) => {
+        const option = document.createElement('option');
+        option.value = countryCode;
+        option.textContent = countryCode;
+        if (index === 0) option.selected = true; // Explicitly set first one
+        select.appendChild(option);
+      });
     }
-  });
+  }
+
+  // Listen for when the shipping methods accordion is shown
+  document
+    .getElementById('collapse3')
+    .addEventListener('shown.bs.collapse', fetchShippingMethods);
+
+  function fetchShippingMethods() {
+    const container = document.getElementById('shippingMethodsContainer');
+    container.innerHTML = '';
+    const jsonResponseDiv = document.getElementById('json-response');
+    jsonResponseDiv.textContent = '';
+
+    const cartId = localStorage.getItem('cartId');
+    const storeKey = localStorage.getItem('store');
+
+    if (storeKey && cartId) {
+      fetch(
+        `/api/shipping-methods/in-store/${storeKey}/matching-cart?cartId=${cartId}`,
+      )
+        .then(handleResponse)
+        .then((methods) => {
+          console.log('Shipping Methods:', methods);
+          jsonResponseDiv.textContent = JSON.stringify(methods, null, 2);
+
+          methods.results.forEach((method, index) => {
+            const div = document.createElement('div');
+            div.className = 'form-check';
+
+            const radio = document.createElement('input');
+            radio.className = 'form-check-input';
+            radio.type = 'radio';
+            radio.name = 'shippingMethod';
+            radio.id = `shippingMethod${index}`;
+            radio.value = method.id;
+            // ✅ Select the first shipping method by default
+            if (index === 0) radio.checked = true;
+
+            const label = document.createElement('label');
+            label.className = 'form-check-label';
+            label.htmlFor = radio.id;
+            label.textContent = method.name || 'Unnamed shipping method';
+
+            div.appendChild(radio);
+            div.appendChild(label);
+            container.appendChild(div);
+          });
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          jsonResponseDiv.textContent = error.message;
+        });
+    } else {
+      jsonResponseDiv.textContent = 'No current active cart';
+    }
+  }
 
   function getCart() {
     const jsonResponseDiv = document.getElementById('json-response');
@@ -382,54 +446,6 @@
         .then((data) => {
           console.log('Success:', data);
           jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-          jsonResponseDiv.textContent = error.message;
-        });
-    } else {
-      jsonResponseDiv.textContent = 'No current active cart';
-    }
-  }
-
-  function fetchShippingMethods() {
-    const container = document.getElementById('shippingMethodsContainer');
-    container.innerHTML = '';
-    const jsonResponseDiv = document.getElementById('json-response');
-    jsonResponseDiv.textContent = '';
-
-    const cartId = localStorage.getItem('cartId');
-    const storeKey = localStorage.getItem('store');
-
-    if (storeKey && cartId) {
-      fetch(
-        `/api/shipping-methods/in-store/${storeKey}/matching-cart?cartId=${cartId}`,
-      )
-        .then(handleResponse)
-        .then((methods) => {
-          console.log('Shipping Methods:', methods);
-          jsonResponseDiv.textContent = JSON.stringify(methods, null, 2);
-
-          methods.results.forEach((method, index) => {
-            const div = document.createElement('div');
-            div.className = 'form-check';
-
-            const radio = document.createElement('input');
-            radio.className = 'form-check-input';
-            radio.type = 'radio';
-            radio.name = 'shippingMethod';
-            radio.id = `shippingMethod${index}`;
-            radio.value = method.id;
-
-            const label = document.createElement('label');
-            label.className = 'form-check-label';
-            label.htmlFor = radio.id;
-            label.textContent = method.name || 'Unnamed shipping method';
-
-            div.appendChild(radio);
-            div.appendChild(label);
-            container.appendChild(div);
-          });
         })
         .catch((error) => {
           console.error('Error:', error);

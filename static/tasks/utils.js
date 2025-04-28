@@ -14,3 +14,21 @@ function handleResponse(response) {
   }
   return response.json();
 }
+
+function getCountries() {
+  const url = '/api/project-settings/countries';
+  fetch(url)
+    .then(handleResponse)
+    .then((countries) => {
+      countries = countries.sort();
+      console.log('Available countries:', countries);
+      if (countries && countries.length > 0) {
+        localStorage.setItem('countriesList', JSON.stringify(countries));
+      } else {
+        localStorage.removeItem('countriesList');
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}

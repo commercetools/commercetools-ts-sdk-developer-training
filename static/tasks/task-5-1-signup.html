@@ -150,13 +150,12 @@
                     <label for="country" class="form-label">Country</label>
                   </div>
                   <div class="col-md-8 mb-2">
-                    <input
-                      type="text"
-                      class="form-control"
+                    <select
+                      class="form-select"
                       id="country"
                       name="country"
                       required
-                    />
+                    ></select>
                   </div>
                 </div>
                 <div class="form-check mt-3">
@@ -224,6 +223,24 @@
 </div>
 
 <script>
+  setTimeout(populateCountries, 0);
+
+  function populateCountries() {
+    const countriesList = localStorage.getItem('countriesList');
+    const select = document.getElementById('country');
+
+    if (countriesList) {
+      const countries = JSON.parse(countriesList);
+      countries.forEach((countryCode, index) => {
+        const option = document.createElement('option');
+        option.value = countryCode;
+        option.textContent = countryCode;
+        if (index === 0) option.selected = true; // Explicitly set first one
+        select.appendChild(option);
+      });
+    }
+  }
+
   function displayAnonymousCart(event) {
     let cartId = localStorage.getItem('cartId');
 
