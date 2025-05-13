@@ -32,3 +32,5 @@ function getCountries() {
       console.error('Error:', error);
     });
 }
+
+getCountries();
