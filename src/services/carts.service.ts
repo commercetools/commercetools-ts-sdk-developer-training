@@ -33,8 +33,8 @@ export class CartsService {
 
     const cartDraft: CartDraft = {
       anonymousId: sessionId,
-      currency: currency ?? 'EUR',
-      country: country ?? 'DE',
+      currency,
+      country,
       deleteDaysAfterLastModification: 30,
       lineItems: [
         {
@@ -55,8 +55,14 @@ export class CartsService {
   }
 
   async addLineItemsToCart(lineItemsDetails: LineItemsAddDto): Promise<Cart> {
-    const { id, storeKey, sku, quantity, supplyChannel, distributionChannel } =
-      lineItemsDetails;
+    const {
+      id,
+      storeKey,
+      sku,
+      quantity,
+      supplyChannelKey,
+      distributionChannelKey,
+    } = lineItemsDetails;
 
     const cart = await this.getCartById({ id, storeKey });
     const cartVersion = cart.version;
@@ -67,16 +73,16 @@ export class CartsService {
       action: 'addLineItem',
       sku,
       quantity,
-      ...(supplyChannel && {
+      ...(supplyChannelKey && {
         supplyChannel: {
           typeId: 'channel',
-          key: supplyChannel,
+          key: supplyChannelKey,
         },
       }),
-      ...(distributionChannel && {
+      ...(distributionChannelKey && {
         distributionChannel: {
           typeId: 'channel',
-          key: distributionChannel,
+          key: distributionChannelKey,
         },
       }),
     };
