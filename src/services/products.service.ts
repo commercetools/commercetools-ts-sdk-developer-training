@@ -89,10 +89,10 @@ export class ProductsService {
       ],
       markMatchingVariants: true,
       productProjectionParameters: {
-        priceCurrency: currency ?? 'EUR',
-        priceCountry: country ?? 'DE',
-        storeProjection: storeKey || undefined,
-        localeProjection: locale ? [locale!] : undefined,
+        priceCurrency: currency,
+        priceCountry: country,
+        storeProjection: storeKey,
+        localeProjection: [locale],
       },
     };
 
@@ -120,9 +120,7 @@ export class ProductsService {
   }
 }
 
-function createFacets(
-  locale: string = 'en-US',
-): ProductSearchFacetExpression[] {
+function createFacets(locale: string): ProductSearchFacetExpression[] {
   return [
     {
       distinct: {
