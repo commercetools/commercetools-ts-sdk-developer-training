@@ -15,24 +15,19 @@ export class CartCreateBodyDto {
   @IsString()
   sessionId?: string;
 
-  @IsOptional()
   @IsNotEmpty()
   @IsString()
-  sku?: string;
+  sku: string;
 
   @IsOptional()
   @IsPositive()
   quantity?: number;
 
-  @IsOptional()
-  @IsNotEmpty()
   @IsISO31661Alpha2()
-  country?: string;
+  country: string;
 
-  @IsOptional()
-  @IsNotEmpty()
   @IsISO4217CurrencyCode()
-  currency?: string;
+  currency: string;
 }
 
 export class CartCreateParamsDto {
@@ -67,12 +62,12 @@ export class LineItemsAddBodyDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  supplyChannel?: string;
+  supplyChannelKey?: string;
 
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  distributionChannel?: string;
+  distributionChannelKey?: string;
 }
 
 export class LineItemsAddParamsDto {
@@ -119,13 +114,9 @@ export class ShippingAddressUpdateBodyDto {
   @IsString()
   lastName?: string;
 
-  @IsString()
-  @IsNotEmpty()
   @IsISO31661Alpha2()
   country: string;
 
-  @IsString()
-  @IsNotEmpty()
   @IsEmail()
   email: string;
 }
