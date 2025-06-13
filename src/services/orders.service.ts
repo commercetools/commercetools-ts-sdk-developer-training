@@ -4,7 +4,7 @@ import {
   ByProjectKeyRequestBuilder,
   Order,
   OrderFromCartDraft,
-  OrderSetShippingAddressCustomTypeAction,
+  OrderSetCustomTypeAction,
   OrderUpdateAction,
 } from '@commercetools/platform-sdk';
 import { API_ROOT } from 'src/commercetools/api-client.module';
@@ -43,7 +43,7 @@ export class OrdersService {
       .then((response) => response.body);
   }
 
-  async updateShippingAddressCustomFields(
+  async updateOrderCustomFields(
     customFieldsDetails: CustomFieldsUpdateDto,
   ): Promise<Order> {
     const { orderNumber, instructions, time, storeKey } = customFieldsDetails;
@@ -51,21 +51,20 @@ export class OrdersService {
     let order = await this.getOrderByNumber(orderNumber, storeKey);
     const orderVersion = order.version;
 
-    const updateShippingAddressCustomFields: OrderSetShippingAddressCustomTypeAction =
-      {
-        action: 'setShippingAddressCustomType',
-        type: {
-          key: CUSTOM_TYPE_KEY,
-          typeId: 'type',
-        },
-        fields: {
-          time,
-          instructions,
-        },
-      };
+    const updateOrderCustomFields: OrderSetCustomTypeAction = {
+      action: 'setCustomType',
+      type: {
+        key: CUSTOM_TYPE_KEY,
+        typeId: 'type',
+      },
+      fields: {
+        time,
+        instructions,
+      },
+    };
 
     const orderUpdateActions: OrderUpdateAction[] = [];
-    orderUpdateActions.push(updateShippingAddressCustomFields);
+    orderUpdateActions.push(updateOrderCustomFields);
 
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
