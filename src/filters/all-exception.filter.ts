@@ -4,6 +4,7 @@ import {
   ArgumentsHost,
   HttpException,
 } from '@nestjs/common';
+import { isSDKError } from 'src/types/error.type';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -18,13 +19,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const message =
       exception instanceof HttpException
         ? exception.message
-        : exception.message || 'Internal server error';
+        : 'Internal server error';
+    const errors = exception.getResponse()?.message;
 
     response.status(status).json({
       statusCode: status,
       message,
       timestamp: new Date().toISOString(),
       path: request.url,
+      errors,
     });
   }
 }
