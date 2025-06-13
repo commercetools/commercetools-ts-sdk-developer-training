@@ -28,7 +28,7 @@ export class OrdersController {
     @Param() customFieldsParams: CustomFieldsUpdateParamsDto,
     @Body() customFieldsData: CustomFieldsUpdateBodyDto,
   ) {
-    return this.ordersService.updateShippingAddressCustomFields({
+    return this.ordersService.updateOrderCustomFields({
       ...customFieldsParams,
       ...customFieldsData,
     });
