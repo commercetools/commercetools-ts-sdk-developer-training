@@ -20,7 +20,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
       exception instanceof HttpException
         ? exception.message
         : 'Internal server error';
-    const errors = exception.getResponse()?.message;
+
+    const errors = isSDKError(exception)
+      ? exception.body?.errors
+      : exception.getResponse().message;
 
     response.status(status).json({
       statusCode: status,
