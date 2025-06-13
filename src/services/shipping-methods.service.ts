@@ -1,5 +1,6 @@
 import {
   ByProjectKeyRequestBuilder,
+  ShippingMethod,
   ShippingMethodPagedQueryResponse,
 } from '@commercetools/platform-sdk';
 import { Inject, Injectable } from '@nestjs/common';
@@ -22,7 +23,7 @@ export class ShippingMethodsService {
       .then((response) => response.body);
   }
 
-  getShippingMethodByKey(key: string) {
+  getShippingMethodByKey(key: string): Promise<ShippingMethod> {
     return this.apiRoot
       .shippingMethods()
       .withKey({ key })
