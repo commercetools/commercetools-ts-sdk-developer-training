@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Param, Post } from '@nestjs/common';
 import { OrderCreateBodyDto, OrderCreateParamsDto } from 'src/dtos/orders.dto';
 import { OrdersService } from '../services/orders.service';
 import {
@@ -23,11 +23,12 @@ export class OrdersController {
   }
 
   @Post(':orderNumber/custom-fields')
+  @HttpCode(200)
   updateOrderCustomFields(
     @Param() customFieldsParams: CustomFieldsUpdateParamsDto,
     @Body() customFieldsData: CustomFieldsUpdateBodyDto,
   ) {
-    return this.ordersService.updateShippingAddressCustomFields({
+    return this.ordersService.updateOrderCustomFields({
       ...customFieldsParams,
       ...customFieldsData,
     });

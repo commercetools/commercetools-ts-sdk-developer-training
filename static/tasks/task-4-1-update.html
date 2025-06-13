@@ -285,14 +285,10 @@
 </div>
 
 <script>
-  // Listen for when the shipping address accordion is shown
-  document
-    .getElementById('collapse2')
-    .addEventListener('shown.bs.collapse', populateCountries);
-
   function populateCountries() {
     const countriesList = localStorage.getItem('countriesList');
     const select = document.getElementById('country');
+    select.innerHTML = '';
 
     if (countriesList) {
       const countries = JSON.parse(countriesList);
@@ -305,6 +301,10 @@
       });
     }
   }
+
+  countries.then((_) => {
+    populateCountries();
+  });
 
   // Listen for when the shipping methods accordion is shown
   document

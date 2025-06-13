@@ -37,8 +37,14 @@ export class CartsService {
   }
 
   async addLineItemsToCart(lineItemsDetails: LineItemsAddDto): Promise<Cart> {
-    const { id, storeKey, sku, quantity, supplyChannel, distributionChannel } =
-      lineItemsDetails;
+    const {
+      id,
+      storeKey,
+      sku,
+      quantity,
+      supplyChannelKey,
+      distributionChannelKey,
+    } = lineItemsDetails;
 
     const cart = await this.getCartById({ id, storeKey });
     const cartVersion = cart.version;

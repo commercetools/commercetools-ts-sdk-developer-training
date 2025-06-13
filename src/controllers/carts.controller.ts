@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { CartsService } from '../services/carts.service';
 import {
   CartCreateBodyDto,
@@ -35,6 +35,7 @@ export class CartsController {
   }
 
   @Post(':id/lineitems')
+  @HttpCode(200)
   addLineItems(
     @Param() lineItemsParams: LineItemsAddParamsDto,
     @Body() lineItemsData: LineItemsAddBodyDto,
@@ -46,6 +47,7 @@ export class CartsController {
   }
 
   @Post(':id/discount-codes')
+  @HttpCode(200)
   applyDiscountCode(
     @Param() discountCodeParams: DiscountCodeApplyParamsDto,
     @Body() discountCodeData: DiscountCodeApplyBodyDto,
@@ -57,6 +59,7 @@ export class CartsController {
   }
 
   @Post(':id/shipping-address')
+  @HttpCode(200)
   updateShippingAddress(
     @Param() shippingAddressParams: ShippingAddressUpdateParamsDto,
     @Body() shippingAddressData: ShippingAddressUpdateBodyDto,
@@ -68,6 +71,7 @@ export class CartsController {
   }
 
   @Post(':id/shipping-method')
+  @HttpCode(200)
   updateShippingMethod(
     @Param() shippingMethodParams: ShippingMethodUpdateParamsDto,
     @Body() shippingMethodData: ShippingMethodUpdateBodyDto,

@@ -7,11 +7,6 @@ export class ProjectSettingsController {
     private readonly projectSettingsService: ProjectSettingsService,
   ) {}
 
-  @Get('currencies')
-  getAllCurrencies() {
-    return this.projectSettingsService.getCurrencies();
-  }
-
   @Get('countries')
   getAllCountries() {
     return this.projectSettingsService.getCountries();

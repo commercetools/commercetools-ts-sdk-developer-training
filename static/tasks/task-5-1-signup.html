@@ -223,11 +223,10 @@
 </div>
 
 <script>
-  setTimeout(populateCountries, 0);
-
   function populateCountries() {
     const countriesList = localStorage.getItem('countriesList');
     const select = document.getElementById('country');
+    select.innerHTML = ''; // Clear existing options
 
     if (countriesList) {
       const countries = JSON.parse(countriesList);
@@ -238,8 +237,17 @@
         if (index === 0) option.selected = true; // Explicitly set first one
         select.appendChild(option);
       });
+    } else {
+      // Show placeholder if no countries available
+      const option = document.createElement('option');
+      option.textContent = 'No countries available';
+      option.disabled = true;
+      option.selected = true;
+      select.appendChild(option);
     }
   }
+
+  populateCountries();
 
   function displayAnonymousCart(event) {
     let cartId = localStorage.getItem('cartId');

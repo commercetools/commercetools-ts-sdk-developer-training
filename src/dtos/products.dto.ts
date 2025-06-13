@@ -15,10 +15,9 @@ export class ProductsSearchDto {
   @IsString()
   keyword?: string;
 
-  @IsOptional()
   @IsNotEmpty()
   @IsString()
-  storeKey?: string;
+  storeKey: string;
 
   @IsOptional()
   @IsNotEmpty()
@@ -26,18 +25,12 @@ export class ProductsSearchDto {
   @Transform(({ value }) => value === 'true')
   facets?: boolean;
 
-  @IsOptional()
-  @IsNotEmpty()
   @IsLocale()
-  locale?: string;
+  locale: string;
 
-  @IsOptional()
-  @IsNotEmpty()
   @IsISO31661Alpha2()
-  country?: string;
+  country: string;
 
-  @IsOptional()
-  @IsNotEmpty()
   @IsISO4217CurrencyCode()
-  currency?: string;
+  currency: string;
 }
