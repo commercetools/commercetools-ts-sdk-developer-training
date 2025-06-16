@@ -66,19 +66,21 @@
       .then(handleResponse)
       .then((response) => response.results);
 
+    const country2Currency = {
+      DE: 'EUR',
+      GB: 'GBP',
+      US: 'USD',
+    };
+
     return stores.map((store) => ({
       id: store.key,
       name: store.name['en-US'],
       locales: store.languages,
       countries: store.countries.map((country) => country.code),
+      currencies: store.countries.map(
+        (country) => country2Currency[country.code],
+      ),
     }));
-  }
-
-  async function fetchCurrencies() {
-    //return ['USD', 'EUR', 'GBP'];
-    const url = '/api/project-settings/currencies';
-    const currencies = await fetch(url).then(handleResponse);
-    return currencies;
   }
 
   async function populateStores() {
@@ -90,13 +92,9 @@
       option.textContent = store.name;
       option.dataset.locales = JSON.stringify(store.locales);
       option.dataset.countries = JSON.stringify(store.countries);
+      option.dataset.currencies = JSON.stringify(store.currencies);
       storeSelect.appendChild(option);
     });
-  }
-
-  async function populateCurrencies() {
-    const currencies = await fetchCurrencies();
-    populateDropdown('currency', currencies);
   }
 
   async function updateStoreDetails() {
@@ -107,9 +105,11 @@
 
     const locales = JSON.parse(selectedOption.dataset.locales);
     const countries = JSON.parse(selectedOption.dataset.countries);
+    const currencies = JSON.parse(selectedOption.dataset.currencies);
 
     populateDropdown('locale', locales);
     populateDropdown('country', countries);
+    populateDropdown('currency', currencies);
   }
 
   function populateDropdown(elementId, items) {
@@ -151,5 +151,4 @@
     .addEventListener('change', handleDropdownChange);
 
   populateStores();
-  populateCurrencies();
 </script>
