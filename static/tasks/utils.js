@@ -17,7 +17,7 @@ function handleResponse(response) {
 
 function getCountries() {
   const url = '/api/project-settings/countries';
-  fetch(url)
+  return fetch(url)
     .then(handleResponse)
     .then((countries) => {
       countries = countries.sort();
@@ -27,8 +27,13 @@ function getCountries() {
       } else {
         localStorage.removeItem('countriesList');
       }
+      return countries; // Return the countries for chaining
     })
     .catch((error) => {
-      console.error('Error:', error);
+      console.error('Error fetching countries:', error);
+      localStorage.removeItem('countriesList'); // Clean up on error
+      throw error; // Re-throw to allow calling code to handle it
     });
 }
+
+var countries = getCountries();
