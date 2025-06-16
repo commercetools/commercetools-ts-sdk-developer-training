@@ -1,5 +1,6 @@
 import {
   ByProjectKeyRequestBuilder,
+  ShippingMethod,
   ShippingMethodPagedQueryResponse,
 } from '@commercetools/platform-sdk';
 import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
@@ -18,7 +19,7 @@ export class ShippingMethodsService {
     throw new NotImplementedException('Feature not implemented');
   }
 
-  getShippingMethodByKey(key: string) {
+  getShippingMethodByKey(key: string): Promise<ShippingMethod> {
     throw new NotImplementedException('Feature not implemented');
   }
 

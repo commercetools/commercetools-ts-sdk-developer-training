@@ -7,12 +7,7 @@ export class ProjectSettingsService {
   constructor(
     @Inject(API_ROOT) private readonly apiRoot: ByProjectKeyRequestBuilder,
   ) {}
-  getCurrencies(): Promise<Array<string>> {
-    return this.apiRoot
-      .get()
-      .execute()
-      .then((response) => response.body.currencies);
-  }
+
   getCountries(): Promise<Array<string>> {
     return this.apiRoot
       .get()
