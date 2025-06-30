@@ -84,7 +84,23 @@ export class ProductsService {
         {
           field: 'variants.prices.centAmount',
           order: 'asc',
-          mode: 'max',
+          mode: 'min',
+          filter: {
+            and: [
+              {
+                exact: {
+                  field: 'variants.prices.country',
+                  value: country,
+                },
+              },
+              {
+                exact: {
+                  field: 'variants.prices.currencyCode',
+                  value: currency,
+                },
+              },
+            ],
+          },
         },
       ],
       markMatchingVariants: true,
