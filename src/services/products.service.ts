@@ -141,8 +141,8 @@ function createFacets(locale: string): ProductSearchFacetExpression[] {
     {
       distinct: {
         name: 'Color',
-        field: 'variants.attributes.color',
-        fieldType: 'ltext',
+        field: 'variants.attributes.search-color.label',
+        fieldType: 'lenum',
         language: locale,
         level: 'variants',
         scope: 'query',
@@ -151,8 +151,8 @@ function createFacets(locale: string): ProductSearchFacetExpression[] {
     {
       distinct: {
         name: 'Finish',
-        field: 'variants.attributes.finish',
-        fieldType: 'ltext',
+        field: 'variants.attributes.search-finish.label',
+        fieldType: 'lenum',
         language: locale,
         level: 'variants',
         scope: 'query',
