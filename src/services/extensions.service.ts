@@ -70,7 +70,7 @@ export class ExtensionsService {
       name: {
         'de-DE': 'TT Delivery Instructions',
         'en-US': 'TT Delivery Instructions',
-        'en-UK': 'TT Delivery Instructions',
+        'en-GB': 'TT Delivery Instructions',
       },
       resourceTypeIds: ['order'],
       fieldDefinitions: [
@@ -82,7 +82,7 @@ export class ExtensionsService {
           label: {
             'de-DE': 'Instructions',
             'en-US': 'Instructions',
-            'en-UK': 'Instructions',
+            'en-GB': 'Instructions',
           },
           required: false,
         },
@@ -94,7 +94,7 @@ export class ExtensionsService {
           label: {
             'de-DE': 'Preferred Time',
             'en-US': 'Preferred Time',
-            'en-UK': 'Preferred Time',
+            'en-GB': 'Preferred Time',
           },
           required: false,
         },
