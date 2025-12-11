@@ -23,7 +23,7 @@
     "@commercetools/importapi-sdk": "^6.1.1",
     "@commercetools/platform-sdk": "^8.5.0",
     "@commercetools/ts-client": "^3.2.0",
-    "@nestjs/common": "^11.0.1",
+    "@nestjs/common": "^11.0.17",
     "@nestjs/core": "^11.0.1",
     "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/platform-express": "^11.0.11",
