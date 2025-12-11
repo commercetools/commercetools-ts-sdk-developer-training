@@ -88,6 +88,16 @@ $ npm run test:e2e
 
 For viewing the frontend, plese go to http://localhost:3000
 
+
+### Data Validation for Agentic Commerce Developer Course
+
+If you are using this repository in the `Composable Commerce Agentic Commerce Developer` Course, 
+you should be able to validate the project data using:
+
+```bash
+$ npm run validate
+```
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](https://github.com/nestjs/nest/blob/master/LICENSE) file for details.
