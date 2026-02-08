@@ -15,6 +15,7 @@ export class GraphqlService {
   getOrdersByEmail(orderDetails: OrdersGetDto): Promise<GraphQLResponse> {
     const { storeKey, email } = orderDetails;
 
+    // TODO: UPDATE query to also return customer's first and last name
     const query = `
     query MyQuery($storeKey: KeyReferenceInput!, $condition: String!) {
       inStore(key: $storeKey) {

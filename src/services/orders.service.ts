@@ -49,11 +49,8 @@ export class OrdersService {
       type: {
         key: CUSTOM_TYPE_KEY,
         typeId: 'type',
-      },
-      fields: {
-        time,
-        instructions,
-      },
+      }
+      // TODO: SET custom fields
     };
 
     const orderUpdateActions: OrderUpdateAction[] = [];

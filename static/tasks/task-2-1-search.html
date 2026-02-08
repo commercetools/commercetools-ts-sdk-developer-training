@@ -190,63 +190,40 @@
 
       const url = `/api/products?${params.toString()}`;
 
-      // let url = '/api/products?';
-
-      // if(locale) {
-      //   url += `locale=${locale}`;
-      // }
-
-      // if(currency) {
-      //   url += (url.includes('?') ? '&' : '') + `currency=${currency}`;
-      // }
-
-      // if(country) {
-      //   url += (url.includes('?') ? '&' : '') + `country=${country}`;
-      // }
-
-      // if (keyword) {
-      //   url += (url.includes('?') ? '&' : '') + `keyword=${keyword}`;
-      // }
-
-      // if (storeKey) {
-      //   url += (url.includes('?') ? '&' : '') + `storeKey=${storeKey}`;
-      // }
-
-      // if (includeFacets) {
-      //   url += (url.includes('?') ? '&' : '') + `facets=true`;
-      // }
 
       console.log(url);
       fetch(url)
         .then(handleResponse)
-        .then((products) => {
+        .then((response) => {
           //display the JSON Response
-          jsonResponseDiv.textContent = JSON.stringify(products, null, 2);
+          jsonResponseDiv.textContent = JSON.stringify(response, null, 2);
 
           // display the results
-          console.log(products);
-          if (products.results && products.results.length > 0) {
+          console.log(response);
+          const products = response.data?.productsSearch;
+          if (products && products.results && products.results.length > 0) {
             console.log(products.results);
             products.results.forEach((result) => {
-              if (result.productProjection) {
+              const productData = result.product?.masterData?.current;
+              if (productData) {
                 const productDiv = document.createElement('div');
                 productDiv.classList.add('col-md-12', 'mb-5');
 
                 productDiv.innerHTML = `
                                 <div class="card">
-                                    <img src="${result.productProjection.masterVariant.images[0].url}" class="card-img-top img-fluid" style="height: 200px; object-fit: cover;" alt="${result.productProjection.name[Object.keys(result.productProjection.name)[0] ?? locale]}">
+                                    <img src="${productData.masterVariant.images[0]?.url || ''}" class="card-img-top img-fluid" style="height: 200px; object-fit: cover;" alt="${productData.name || ''}">
                                     <div class="card-body">
-                                        <h5 class="card-title">${result.productProjection.name[Object.keys(result.productProjection.name)[0] ?? locale]}</h5>
-                                        ${result.productProjection.masterVariant.sku ? `<p class="card-text"><strong>SKU:</strong> ${result.productProjection.masterVariant.sku}</p>` : ''}
-                                        ${result.productProjection.masterVariant.price ? `<p class="card-text"><strong>Price:</strong> ${result.productProjection.masterVariant.price.value.currencyCode} ${(result.productProjection.masterVariant.price.value.centAmount / 100).toFixed(2)}</p>` : ''}
+                                        <h5 class="card-title">${productData.name || ''}</h5>
+                                        ${productData.masterVariant.sku ? `<p class="card-text"><strong>SKU:</strong> ${productData.masterVariant.sku}</p>` : ''}
+                                        ${productData.masterVariant.price ? `<p class="card-text"><strong>Price:</strong> ${productData.masterVariant.price.value.currencyCode} ${(productData.masterVariant.price.value.centAmount / 100).toFixed(2)}</p>` : ''}
 
-                                        ${result.productProjection.variants.length > 0 ? '<h4>Variants:</h4>' : ''}
-                                        ${result.productProjection.variants
+                                        ${productData.variants?.length > 0 ? '<h4>Variants:</h4>' : ''}
+                                        ${(productData.variants || [])
                                           .map((variant) => {
                                             return `
                                                 <div>
                                                     ${variant.sku ? `<p><strong>SKU: ${variant.sku}</strong></p>` : ''}
-                                                    ${variant.images[0].url ? `<img src="${variant.images[0].url}" class="img-fluid d-block mx-auto mb-2" style="width: 100px; height: 100px;" />` : ''}
+                                                    ${variant.images?.[0]?.url ? `<img src="${variant.images[0].url}" class="img-fluid d-block mx-auto mb-2" style="width: 100px; height: 100px;" />` : ''}
                                                     ${variant.price ? `<p class="text-center"><strong>Price:</strong> ${variant.price.value.currencyCode} ${(variant.price.value.centAmount / 100).toFixed(2)}</p>` : ''}
 
                                                 </div>

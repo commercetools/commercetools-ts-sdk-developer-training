@@ -1,11 +1,7 @@
-import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import {
-  _SearchQuery,
-  _SearchQueryExpression,
   ByProjectKeyRequestBuilder,
-  ProductPagedSearchResponse,
-  ProductSearchFacetExpression,
-  ProductSearchRequest,
+  GraphQLResponse,
 } from '@commercetools/platform-sdk';
 import { ProductsSearchDto } from 'src/dtos/products.dto';
 import { isSDKError } from '../types/error.type';
@@ -13,19 +9,11 @@ import { ObjectNotFoundException } from '../errors/object-not-found.error';
 import { API_ROOT } from '../commercetools/api-client.module';
 import { StoresService } from './stores.service';
 
-// interface _SearchQueryExpression {
-//   exact?: { field: string; value: string };
-//   fullText?: {
-//     field: string;
-//     language: string;
-//     value: string;
-//     mustMatch: 'any' | 'all';
-//     caseInsensitive: boolean;
-//   };
-// }
 
 @Injectable()
 export class ProductsService {
+  private readonly logger = new Logger(ProductsService.name);
+
   constructor(
     @Inject(API_ROOT) private readonly apiRoot: ByProjectKeyRequestBuilder,
     private readonly storesService: StoresService,
@@ -33,7 +21,9 @@ export class ProductsService {
 
   async searchProducts(
     searchDetails: ProductsSearchDto,
-  ): Promise<ProductPagedSearchResponse> {
+  ): Promise<GraphQLResponse> {
+    this.logger.log(`Searching products with parameters: ${JSON.stringify(searchDetails)}`);
+
     const {
       keyword,
       storeKey,
@@ -43,81 +33,148 @@ export class ProductsService {
       locale,
     } = searchDetails;
 
-    let searchQuery: _SearchQuery | undefined;
+    let searchQuery: SearchQueryInput | undefined;
 
-    // if (storeKey || keyword) {
-    //   let storeQueryExpression: _SearchQueryExpression | undefined;
-    //   let fullTextQueryExpression: _SearchQueryExpression | undefined;
+    if (storeKey || keyword) {
+      let storeQueryExpression: SearchQueryInput | undefined;
+      let fullTextQueryExpression: SearchQueryInput | undefined;
 
-    //   if (storeKey) {
-    //     const storeId = await this.getStoreId(storeKey!);
-    //     storeQueryExpression = {
-    //       exact: { field: 'stores', value: storeId },
-    //     };
-    //   }
+      if (storeKey) {
+        const storeId = await this.getStoreId(storeKey!);
+        storeQueryExpression = {
+          exact: { field: 'stores', value: storeId },
+        };
+      }
 
-    //   if (keyword) {
-    //     fullTextQueryExpression = {
-    //       fullText: {
-    //         field: 'name',
-    //         language: locale ?? 'en-US',
-    //         value: keyword,
-    //         mustMatch: 'any',
-    //         caseInsensitive: true,
-    //       },
-    //     };
-    //   }
+      if (keyword) {
+        fullTextQueryExpression = {
+          fullText: {
+            field: 'name',
+            language: locale ?? 'en-US',
+            value: keyword,
+            mustMatch: 'any',
+          },
+        };
+      }
 
-    //   if (storeQueryExpression && fullTextQueryExpression) {
-    //     searchQuery = { and: [storeQueryExpression, fullTextQueryExpression] };
-    //   } else {
-    //     searchQuery = storeQueryExpression || fullTextQueryExpression;
-    //   }
-    // }
+      if (storeQueryExpression && fullTextQueryExpression) {
+        searchQuery = { and: [storeQueryExpression, fullTextQueryExpression] };
+      } else {
+        searchQuery = storeQueryExpression || fullTextQueryExpression;
+      }
+    }
 
     const facets = useFacets ? createFacets(locale) : undefined;
 
-    const productSearchRequest: ProductSearchRequest = {
+    const sort: SearchSortingInput[] = [
+      {
+        field: 'variants.prices.centAmount',
+        order: 'asc',
+        mode: 'min',
+        filter: {
+          and: [
+            {
+              exact: {
+                field: 'variants.prices.country',
+                value: country,
+              },
+            },
+            {
+              exact: {
+                field: 'variants.prices.currencyCode',
+                value: currency,
+              },
+            },
+          ],
+        },
+      },
+    ];
+
+    const query = `
+      query ProductsSearch(
+        $query: SearchQueryInput
+        $facets: [ProductSearchFacetExpressionInput!]
+        $sort: [SearchSortingInput!]
+        $markMatchingVariants: Boolean
+        $locale: Locale!
+        $currency: Currency!
+        $country: Country!
+      ) {
+        productsSearch(
+          query: $query
+          facets: $facets
+          sort: $sort
+          markMatchingVariants: $markMatchingVariants
+        ) {
+          total
+          offset
+          limit
+          results {
+            id
+            product {
+              id
+              key
+              masterData {
+                current {
+                  name(locale: $locale)
+                  slug(locale: $locale)
+                  masterVariant {
+                    sku
+                    images {
+                      url
+                    }
+                    price(currency: $currency, country: $country) {
+                      value {
+                        centAmount
+                        currencyCode
+                      }
+                      discounted {
+                        value {
+                          centAmount
+                          currencyCode
+                        }
+                      }
+                    }
+                    attributesRaw {
+                      name
+                      value
+                    }
+                  }
+                }
+              }
+            }
+          }
+          facets {
+            ... on ProductSearchFacetResultBucket {
+              name
+              buckets {
+                count
+                key
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    const variables = {
       query: searchQuery,
       facets,
-      sort: [
-        {
-          field: 'variants.prices.centAmount',
-          order: 'asc',
-          mode: 'min',
-          filter: {
-            and: [
-              {
-                exact: {
-                  field: 'variants.prices.country',
-                  value: country,
-                },
-              },
-              {
-                exact: {
-                  field: 'variants.prices.currencyCode',
-                  value: currency,
-                },
-              },
-            ],
-          },
-        },
-      ],
+      sort,
       markMatchingVariants: true,
-      productProjectionParameters: {
-        priceCurrency: currency,
-        priceCountry: country,
-        storeProjection: storeKey,
-        localeProjection: [locale],
-      },
+      locale,
+      currency,
+      country,
     };
 
     return this.apiRoot
-      .products()
-      .search()
-      .post({ body: productSearchRequest })
+      .graphql()
+      .post({ body: { query, variables } })
       .execute()
-      .then((response) => response.body);
+      .then((response) => response.body)
+      .catch((error) => {
+        throw error;
+      });
   }
 
   private async getStoreId(storeKey: string): Promise<string> {
@@ -136,7 +193,21 @@ export class ProductsService {
   }
 }
 
-function createFacets(locale: string): ProductSearchFacetExpression[] {
+type SearchQueryInput = Record<string, unknown>;
+
+type SearchSortingInput = {
+  field: string;
+  order: 'asc' | 'desc';
+  mode?: 'min' | 'max';
+  filter?: SearchFilterExpressionInput;
+  language?: string;
+};
+
+type SearchFilterExpressionInput = Record<string, unknown>;
+
+type ProductSearchFacetExpressionInput = Record<string, unknown>;
+
+function createFacets(locale: string): ProductSearchFacetExpressionInput[] {
   return [
     {
       distinct: {
@@ -157,6 +228,6 @@ function createFacets(locale: string): ProductSearchFacetExpression[] {
         level: 'variants',
         scope: 'query',
       },
-    },
+    }
   ];
 }

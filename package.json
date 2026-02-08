@@ -20,9 +20,9 @@
     "validate": "ts-node src/scripts/validate.ts"
   },
   "dependencies": {
-    "@commercetools/importapi-sdk": "^6.1.1",
-    "@commercetools/platform-sdk": "^8.5.0",
-    "@commercetools/ts-client": "^3.2.0",
+    "@commercetools/importapi-sdk": "^6.13.0",
+    "@commercetools/platform-sdk": "^8.23.0",
+    "@commercetools/ts-client": "^4.8.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/mapped-types": "^2.1.0",

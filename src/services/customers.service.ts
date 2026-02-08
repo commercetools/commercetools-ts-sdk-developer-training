@@ -68,13 +68,7 @@ export class CustomersService {
     const customerSignIn: CustomerSignin = {
       email,
       password,
-      ...(anonymousCartId && {
-        anonymousCart: {
-          id: anonymousCartId,
-          typeId: 'cart',
-        },
-        // anonymousCartSignInMode: 'UseAsNewActiveCustomerCart',
-      }),
+      // TODO: handle anonymous cart, if any
     };
 
     return this.apiRoot

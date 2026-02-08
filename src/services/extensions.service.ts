@@ -5,7 +5,7 @@ import {
   Type,
   TypeDraft,
 } from '@commercetools/platform-sdk';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import { API_ROOT } from '../commercetools/api-client.module';
 import { CustomObjectCreateUpdateBodyDto } from '../dtos/extensions.dto';
 import { isSDKError } from '../types/error.type';
@@ -19,6 +19,14 @@ export class ExtensionsService {
   constructor(
     @Inject(API_ROOT) private readonly apiRoot: ByProjectKeyRequestBuilder,
   ) {}
+
+  createCustomType(): Promise<Type> {
+    
+    // TODO: define a custom type
+    let typeDraft: TypeDraft;
+
+    throw new NotImplementedException('Feature not implemented');
+  }
 
   getCustomObject(): Promise<CustomObject> {
     return this.apiRoot
@@ -64,49 +72,4 @@ export class ExtensionsService {
       .then((response) => response.body);
   }
 
-  createCustomType(): Promise<Type> {
-    const typeDraft: TypeDraft = {
-      key: CUSTOM_TYPE_KEY,
-      name: {
-        'de-DE': 'TT Delivery Instructions',
-        'en-US': 'TT Delivery Instructions',
-        'en-GB': 'TT Delivery Instructions',
-      },
-      resourceTypeIds: ['order'],
-      fieldDefinitions: [
-        {
-          type: {
-            name: 'String',
-          },
-          name: 'instructions',
-          label: {
-            'de-DE': 'Instructions',
-            'en-US': 'Instructions',
-            'en-GB': 'Instructions',
-          },
-          required: false,
-        },
-        {
-          type: {
-            name: 'String',
-          },
-          name: 'time',
-          label: {
-            'de-DE': 'Preferred Time',
-            'en-US': 'Preferred Time',
-            'en-GB': 'Preferred Time',
-          },
-          required: false,
-        },
-      ],
-    };
-
-    return this.apiRoot
-      .types()
-      .post({
-        body: typeDraft,
-      })
-      .execute()
-      .then((response) => response.body);
-  }
 }

@@ -47,11 +47,8 @@ export class CartsService {
     } = lineItemsDetails;
 
     const cart = await this.getCartById({ id, storeKey });
-    const cartVersion = cart.version;
 
     const cartUpdateActions: CartUpdateAction[] = [];
-
-    let addLineItemUpdateAction: CartAddLineItemAction;
 
     throw new NotImplementedException('Feature not implemented');
   }
@@ -62,16 +59,8 @@ export class CartsService {
     const { id, storeKey, discountCode } = discountCodeDetails;
 
     const cart = await this.getCartById({ id, storeKey });
-    const cartVersion = cart.version;
 
     const cartUpdateActions: CartUpdateAction[] = [];
-
-    const addDiscountCodeUpdateAction: CartAddDiscountCodeAction = {
-      action: 'addDiscountCode',
-      code: discountCode,
-    };
-
-    cartUpdateActions.push(addDiscountCodeUpdateAction);
 
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
@@ -79,7 +68,7 @@ export class CartsService {
       .withId({ ID: id })
       .post({
         body: {
-          version: cartVersion,
+          version: cart.version,
           actions: cartUpdateActions,
         },
       })
@@ -94,27 +83,22 @@ export class CartsService {
       shippingAddressDetails;
 
     let cart = await this.getCartById({ id, storeKey });
-    let cartVersion = cart.version;
 
-    const cartUpdateActions: CartUpdateAction[] = [];
-
-    const setShippingAddressUpdateAction: CartSetShippingAddressAction = {
-      action: 'setShippingAddress',
-      address: {
-        firstName,
-        lastName,
-        country,
-        email,
+    const cartUpdateActions: CartUpdateAction[] = [
+      {
+        action: 'setShippingAddress',
+        address: {
+          firstName,
+          lastName,
+          country,
+          email,
+        },
       },
-    };
-
-    const setCustomerEmailUpdateAction: CartSetCustomerEmailAction = {
-      action: 'setCustomerEmail',
-      email,
-    };
-
-    cartUpdateActions.push(setShippingAddressUpdateAction);
-    cartUpdateActions.push(setCustomerEmailUpdateAction);
+      {
+        action: 'setCustomerEmail',
+        email,
+      }
+    ];
 
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
@@ -122,7 +106,7 @@ export class CartsService {
       .withId({ ID: id })
       .post({
         body: {
-          version: cartVersion,
+          version: cart.version,
           actions: cartUpdateActions,
         },
       })
@@ -136,19 +120,14 @@ export class CartsService {
     const { id, storeKey, shippingMethodId } = shippingMethodDetails;
 
     const cart = await this.getCartById({ id, storeKey });
-    const cartVersion = cart.version;
 
-    const cartUpdateActions: CartUpdateAction[] = [];
-
-    const setShippingMethodUpdateAction: CartSetShippingMethodAction = {
+    const cartUpdateActions: CartUpdateAction[] = [{
       action: 'setShippingMethod',
       shippingMethod: {
         typeId: 'shipping-method',
         id: shippingMethodId,
       },
-    };
-
-    cartUpdateActions.push(setShippingMethodUpdateAction);
+    }];
 
     return this.apiRoot
       .inStoreKeyWithStoreKeyValue({ storeKey })
@@ -156,7 +135,7 @@ export class CartsService {
       .withId({ ID: id })
       .post({
         body: {
-          version: cartVersion,
+          version: cart.version,
           actions: cartUpdateActions,
         },
       })
