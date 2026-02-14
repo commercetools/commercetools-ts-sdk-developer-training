@@ -338,31 +338,24 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@commercetools/importapi-sdk@^6.1.1":
-  version "6.8.0"
-  resolved "https://registry.yarnpkg.com/@commercetools/importapi-sdk/-/importapi-sdk-6.8.0.tgz#9e1961a81eaa3237909139cb4ce12c822824a149"
-  integrity sha512-vWptcQjIxM3NxqypGTsGBXbqktO1RUAO8joZTsSnqJfdE9Ial51oAu8otiCxumGXpgveR+A37NJYzFgrHesz3Q==
+"@commercetools/importapi-sdk@^6.13.0":
+  version "6.14.0"
+  resolved "https://registry.yarnpkg.com/@commercetools/importapi-sdk/-/importapi-sdk-6.14.0.tgz#d3eeea98de097c65d347e5c71990370cf89d0eae"
+  integrity sha512-Ef0kfgEN5VumEloN2zxkv4MYhLFkHsmU1r1/22vMbJpHZV8BYcVX8Xv+AQspwUnq+2EG/w2URf3WnWbQVugZHg==
   dependencies:
-    "@commercetools/ts-client" "^4.3.0"
+    "@commercetools/ts-client" "^4.9.0"
 
-"@commercetools/platform-sdk@^8.5.0":
-  version "8.18.0"
-  resolved "https://registry.yarnpkg.com/@commercetools/platform-sdk/-/platform-sdk-8.18.0.tgz#8dd61ad589c130a8cd1827623a1a0e08506c3eee"
-  integrity sha512-x7jlaYWRsEhKRd0pXuTkLby91PNpHKJDDnJFZt8P+xPNEkzzoCaWxVx1VM89gr8hagPzTwXIjz4vUNb30sFpIQ==
+"@commercetools/platform-sdk@^8.23.0":
+  version "8.24.0"
+  resolved "https://registry.yarnpkg.com/@commercetools/platform-sdk/-/platform-sdk-8.24.0.tgz#8aa4b9784406b95a5df7c68f14c245b0283be86d"
+  integrity sha512-DlYywh6sd4G5c+22SGKQ7Gs8xaz1MPpADCmVWh3RDic0j/aezNHccsBzTIyomoVoSIiDGGYTPMYXbsarHOZkWw==
   dependencies:
-    "@commercetools/ts-client" "^4.3.0"
+    "@commercetools/ts-client" "^4.9.0"
 
-"@commercetools/ts-client@^3.2.0":
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/@commercetools/ts-client/-/ts-client-3.4.1.tgz#7760d9dda54897828c12518f9ac17cc3dfd1b48e"
-  integrity sha512-+cgCCjFY5tU3zPHrOayCAA3rR1NzKp6dG+RTKDMp6GPx3qb2xVdIt33XZ/93ICAcag8XrXAaqVlUhdRrS2MQtw==
-  dependencies:
-    buffer "^6.0.3"
-
-"@commercetools/ts-client@^4.3.0":
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/@commercetools/ts-client/-/ts-client-4.3.0.tgz#04183fa6163307acde716fbc56a4ecabe80c4178"
-  integrity sha512-YVR1VQZvKh78fPX1ljrjFXEstNw2FK7F5S/w5VIxULM8HYXgtS4fyd36DO/YpFqZFJ8koueaHnmAGupySryRAA==
+"@commercetools/ts-client@^4.8.0", "@commercetools/ts-client@^4.9.0":
+  version "4.9.0"
+  resolved "https://registry.yarnpkg.com/@commercetools/ts-client/-/ts-client-4.9.0.tgz#a9d4a99bf508e2dbc52eb8526e875caab534e0de"
+  integrity sha512-AM5t4I9FgQw0FcmTcQObJw47fXfi1sTbFzoAZKcWK+TE1lTPyc+cfTJmP7E6QLqyetZtQ7mfwxRWilgvbCbBLA==
   dependencies:
     buffer "^6.0.3"
 
@@ -4391,9 +4384,9 @@ pure-rand@^6.0.0:
   integrity sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA==
 
 qs@^6.11.2, qs@^6.14.0:
-  version "6.14.0"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.14.0.tgz#c63fa40680d2c5c941412a0e899c89af60c0a930"
-  integrity sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==
+  version "6.14.2"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.14.2.tgz#b5634cf9d9ad9898e31fba3504e866e8efb6798c"
+  integrity sha512-V/yCWTTF7VJ9hIh18Ugr2zhJMP01MY7c5kh4J870L7imm6/DIzBsNLTXzMwUA3yZ5b/KBqLx8Kp3uRvd7xSe3Q==
   dependencies:
     side-channel "^1.1.0"
 
